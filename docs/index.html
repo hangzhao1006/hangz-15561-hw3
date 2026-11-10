@@ -6,123 +6,222 @@
 <title>Northwind Business Analysis</title>
 <style>
   :root {
-    --bg: #f9f9f7;
-    --surface: #fcfcfb;
-    --text: #0b0b0b;
-    --muted: #52514e;
-    --accent: #2457a7;
-    --border: rgba(11, 11, 11, 0.10);
+    --paper: #fffefc;
+    --ink: #161513;
+    --ink-2: #454340;
+    --ink-3: #807c75;
+    --rule: #161513;
+    --hairline: #d9d5cc;
+    --link: #1a4d8f;
   }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
   body {
     margin: 0;
-    background: var(--bg);
-    color: var(--text);
-    font: 17px/1.65 Georgia, "Times New Roman", serif;
+    background: var(--paper);
+    color: var(--ink);
+    font: 18px/1.62 Georgia, "Iowan Old Style", "Times New Roman", serif;
   }
-  main { max-width: 860px; margin: 0 auto; padding: 48px 16px 80px; }
-  h1 { font-size: 2rem; margin-bottom: 0.2em; }
-  h2 { color: var(--accent); margin-top: 2.6em; font-size: 1.35rem; }
-  .subtitle { color: var(--muted); margin-top: 0; }
-  section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 24px 28px;
-    margin-top: 1em;
+  a { color: var(--link); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+
+  .sheet { max-width: 720px; margin: 0 auto; padding: 0 20px 72px; }
+
+  /* ---- masthead ---- */
+  header { border-top: 4px solid var(--rule); padding-top: 14px; margin-top: 28px; }
+  .kicker {
+    font: 600 12px/1.4 -apple-system, "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
   }
-  figure { margin: 1.6em 0; text-align: center; }
-  figure img { max-width: 100%; height: auto; border-radius: 6px; }
-  figcaption { color: var(--muted); font-size: 0.85em; margin-top: 0.6em; text-align: left; }
-  .label { font-weight: bold; color: var(--accent); }
-  .note { color: var(--muted); font-size: 0.9em; }
-  footer { margin-top: 3em; color: var(--muted); font-size: 0.9em; border-top: 1px solid var(--border); padding-top: 1em; }
-  a { color: var(--accent); }
-  code { font-size: 0.85em; background: #f0efec; padding: 1px 5px; border-radius: 4px; }
+  h1 {
+    font-size: 44px;
+    line-height: 1.08;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 18px 0 10px;
+  }
+  .dek {
+    font-size: 20px;
+    line-height: 1.5;
+    color: var(--ink-2);
+    font-style: italic;
+    margin: 0 0 18px;
+  }
+  .byline {
+    font: 12px/1.5 -apple-system, "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    border-top: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--hairline);
+    padding: 8px 0;
+    margin-bottom: 34px;
+  }
+  .byline b { color: var(--ink); font-weight: 600; }
+
+  /* ---- body copy ---- */
+  p { margin: 0 0 1.05em; }
+  .lede::first-line { font-variant: small-caps; letter-spacing: 0.02em; }
+
+  /* ---- sections ---- */
+  section { margin-top: 52px; }
+  .qhead {
+    border-top: 2px solid var(--rule);
+    padding-top: 12px;
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 10px;
+    align-items: baseline;
+    margin-bottom: 14px;
+  }
+  .qnum {
+    font: 700 13px/1 -apple-system, "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: 0.12em;
+    color: var(--ink-3);
+  }
+  h2 { font-size: 26px; line-height: 1.25; margin: 0; font-weight: 700; }
+
+  .k {
+    display: block;
+    font: 700 11.5px/1 -apple-system, "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin: 22px 0 6px;
+  }
+  .k + p { margin-top: 0; }
+
+  .finding {
+    border-left: 3px solid var(--rule);
+    padding-left: 16px;
+  }
+
+  /* ---- figures ---- */
+  figure { margin: 26px 0; }
+  figure img { width: 100%; height: auto; display: block; border: 1px solid var(--hairline); }
+  figcaption {
+    font: 13px/1.55 -apple-system, "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink-3);
+    margin-top: 8px;
+  }
+  figcaption b { color: var(--ink-2); font-weight: 600; }
+
+  footer {
+    margin-top: 64px;
+    border-top: 2px solid var(--rule);
+    padding-top: 14px;
+    font: 13.5px/1.6 -apple-system, "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink-3);
+  }
+  code {
+    font: 0.92em/1 ui-monospace, "SF Mono", Menlo, monospace;
+    color: var(--ink-2);
+  }
+
+  @media (max-width: 540px) {
+    h1 { font-size: 33px; }
+    .dek { font-size: 18px; }
+    .qhead { grid-template-columns: 1fr; gap: 4px; }
+  }
 </style>
 </head>
 <body>
-<main>
-  <h1>Northwind Business Analysis</h1>
-  <p class="subtitle">15.561 HW 3 — AI-Assisted Business Data Analysis · Hang Zhao</p>
+<main class="sheet">
+  <header>
+    <div class="kicker"><span>15.561 · AI-Assisted Business Data Analysis</span><span>Homework 3</span></div>
+    <h1>What the order book says: three decisions for Northwind's management</h1>
+    <p class="dek">Eleven years of trading data point to a flagship market quietly shrinking,
+      a revenue line leaning on one wine, and a late-shipment problem that isn't the carriers' fault.</p>
+    <div class="byline"><b>Hang Zhao</b> · Northwind database, Jul 2012 – Oct 2023 · 16,282 orders · $448M revenue</div>
+  </header>
 
-  <p>
-    This page advises a manager of the trading company represented in the
+  <p class="lede">
+    This analysis advises a manager of the trading company represented in the
     Northwind database: 16,282 orders and 609,283 order lines from 93
-    customers in 21 countries, placed between July 2012 and October 2023,
-    roughly $448M of lifetime revenue across 77 food-and-beverage products.
-    Three questions connect the data to decisions about <em>where to sell</em>,
-    <em>what we depend on</em>, and <em>how we deliver</em>. All numbers and
-    charts are produced by the Python scripts in the
-    <a href="https://github.com/hangzhao1006/northwind-analysis">GitHub repository</a>;
-    trend comparisons use complete calendar years (2013–2022) only, because
-    2012 and 2023 are partial years in the data.
+    customers in 21 countries, roughly $448M of lifetime revenue across 77
+    food-and-beverage products. Three questions connect the data to decisions
+    about <em>where to sell</em>, <em>what we depend on</em>, and <em>how we
+    deliver</em>. All numbers and charts are produced by the Python scripts in
+    the <a href="https://github.com/hangzhao1006/northwind-analysis">GitHub
+    repository</a>; trend comparisons use complete calendar years (2013–2022)
+    only, because 2012 and 2023 are partial years in the data.
   </p>
 
-  <h2>Q1 · Which markets are growing, and where should sales attention go?</h2>
   <section>
-    <p><span class="label">Why it matters:</span>
-      Sales headcount and marketing budget follow revenue history by default,
+    <div class="qhead"><span class="qnum">Q1</span>
+      <h2>Which markets are growing, and where should sales attention go?</h2>
+    </div>
+    <span class="k">Why it matters</span>
+    <p>Sales headcount and marketing budget follow revenue history by default,
       which quietly over-invests in large-but-stalling markets. Knowing which
       countries are actually growing tells us where the next dollar of sales
       effort earns the most.</p>
-    <p><span class="label">Approach:</span>
-      Sum order-line revenue (unit price × quantity × (1 − discount)) per
+    <span class="k">Approach</span>
+    <p>Sum order-line revenue (unit price × quantity × (1 − discount)) per
       customer country per year. To rank markets without being whipsawed by
       single-year noise, compare the average of the first two complete years
       (2013–14) with the last two (2021–22) as a compound annual growth rate,
       for the 11 markets with at least $10M of lifetime revenue.</p>
     <figure>
       <img src="figures/q1_market_trends.png" alt="Line chart of annual revenue 2013-2022 for USA, France, Germany and Brazil. USA declines from about $6.2M to $5.0M; France rises to overtake USA in 2022.">
-      <figcaption>Annual revenue in the four largest markets. The USA line starts
-        highest and drifts down; France overtakes it in 2022.</figcaption>
+      <figcaption><b>Figure 1.</b> Annual revenue in the four largest markets. The USA line
+        starts highest and drifts down; France overtakes it in 2022.</figcaption>
     </figure>
     <figure>
       <img src="figures/q1_growth_ranking.png" alt="Bar chart ranking 11 markets by revenue CAGR. Spain and France grow about +3% per year; USA, Italy and Canada decline by 1.7-3.0% per year.">
-      <figcaption>Growth ranking across all ≥$10M markets. Blue bars grow,
+      <figcaption><b>Figure 2.</b> Growth ranking across all ≥$10M markets. Blue bars grow,
         red bars decline.</figcaption>
     </figure>
-    <p><span class="label">Main finding:</span>
-      The largest market is the one losing ground: USA revenue declined about
+    <span class="k">Main finding</span>
+    <p class="finding">The largest market is the one losing ground: USA revenue declined about
       −1.7% per year (from ~$6.2M in 2013 to ~$5.0M in 2022), and France —
       growing at +3.0%/yr — overtook it in 2022. Spain (+3.0%/yr) and
       Argentina (+1.9%/yr) are the fastest-growing mid-size markets, while
       Canada (−3.0%/yr) and Italy (−2.1%/yr) are shrinking.</p>
-    <p><span class="label">Business implication:</span>
-      Rebalance sales coverage toward France and Spain, where momentum is
+    <span class="k">Business implication</span>
+    <p>Rebalance sales coverage toward France and Spain, where momentum is
       positive, and treat the USA as a retention problem — diagnose whether
       the decline is customer churn, order frequency, or basket size before
       spending more on acquisition there. Canada and Italy are small
       <em>and</em> shrinking: serve them efficiently rather than invest.</p>
   </section>
 
-  <h2>Q2 · How dependent is revenue on a few products?</h2>
   <section>
-    <p><span class="label">Why it matters:</span>
-      Concentration is invisible in day-to-day operations but decisive in a
+    <div class="qhead"><span class="qnum">Q2</span>
+      <h2>How dependent is revenue on a few products?</h2>
+    </div>
+    <span class="k">Why it matters</span>
+    <p>Concentration is invisible in day-to-day operations but decisive in a
       crisis: if one product dominates revenue, a supplier failure, a price
       shock, or a competitor cloning that product endangers the whole P&amp;L.
       It also tells procurement where supply contracts deserve redundancy.</p>
-    <p><span class="label">Approach:</span>
-      Rank all 77 products by lifetime discounted revenue, compute each
+    <span class="k">Approach</span>
+    <p>Rank all 77 products by lifetime discounted revenue, compute each
       product's share of the $448M total, and trace the cumulative share
       curve (a Pareto analysis). Two views: the top-10 bar ranking and the
       full cumulative curve.</p>
     <figure>
       <img src="figures/q2_top_products.png" alt="Bar chart of top 10 products by revenue. Côte de Blaye leads with $53.3M (11.9% of total), more than twice the second product.">
-      <figcaption>Top 10 products. One wine, Côte de Blaye, out-earns the next
-        two products combined.</figcaption>
+      <figcaption><b>Figure 3.</b> Top 10 products. One wine, Côte de Blaye, out-earns the
+        next two products combined.</figcaption>
     </figure>
     <figure>
       <img src="figures/q2_cumulative_share.png" alt="Cumulative revenue share curve over 77 ranked products: top 1 product 12%, top 5 28%, top 10 39%, top 20 57% of revenue.">
-      <figcaption>Cumulative share of revenue as products are added best-first.</figcaption>
+      <figcaption><b>Figure 4.</b> Cumulative share of revenue as products are added
+        best-first.</figcaption>
     </figure>
-    <p><span class="label">Main finding:</span>
-      A single premium wine, Côte de Blaye, generates $53.3M — 11.9% of all
+    <span class="k">Main finding</span>
+    <p class="finding">A single premium wine, Côte de Blaye, generates $53.3M — 11.9% of all
       revenue and 2.2× the #2 product. The top 5 products carry 28% and the
       top 20 carry 57% of revenue; the bottom half of the catalog (38
       products) contributes under 20%.</p>
-    <p><span class="label">Business implication:</span>
-      Côte de Blaye deserves key-account treatment on the supply side: a
+    <span class="k">Business implication</span>
+    <p>Côte de Blaye deserves key-account treatment on the supply side: a
       secondary supplier or inventory buffer, and margin monitoring, because
       a 10% stumble in this one SKU moves total revenue by more than a
       percentage point. At the other end, the long tail of ~38 slow products
@@ -130,15 +229,17 @@
       ordering overhead while contributing almost nothing.</p>
   </section>
 
-  <h2>Q3 · Why are 23% of orders shipped late — and can we fix it?</h2>
   <section>
-    <p><span class="label">Why it matters:</span>
-      Late shipments erode customer trust and invite penalty clauses. Before
+    <div class="qhead"><span class="qnum">Q3</span>
+      <h2>Why are 23% of orders shipped late — and can we fix it?</h2>
+    </div>
+    <span class="k">Why it matters</span>
+    <p>Late shipments erode customer trust and invite penalty clauses. Before
       spending on carriers or warehouse capacity, we need to know whether
       lateness is a capacity problem, a carrier problem, or a promising
       problem.</p>
-    <p><span class="label">Approach:</span>
-      For all 16,261 shipped orders, compute the promised lead time
+    <span class="k">Approach</span>
+    <p>For all 16,261 shipped orders, compute the promised lead time
       (required date − order date) and the actual fulfillment time
       (shipped date − order date). Compare the late-shipment rate across
       promised lead times, and check whether urgent orders are actually
@@ -146,22 +247,23 @@
       three shippers show the same ~23% late rate and ~6-day median.</p>
     <figure>
       <img src="figures/q3_late_by_promise.png" alt="Bar chart: share of late orders falls steadily from 97% for same-day promises to 0% for promises of 29 or more days. Dashed line marks the 6-day actual median time to ship.">
-      <figcaption>Late rate by promised lead time. Lateness is almost fully
-        determined by how little time we promised.</figcaption>
+      <figcaption><b>Figure 5.</b> Late rate by promised lead time. Lateness is almost
+        fully determined by how little time we promised.</figcaption>
     </figure>
     <figure>
       <img src="figures/q3_actual_days.png" alt="Histogram of actual days from order to shipment, right-skewed with median 6 days and a tail past 30 days.">
-      <figcaption>Actual fulfillment time, all shipped orders (median 6 days).</figcaption>
+      <figcaption><b>Figure 6.</b> Actual fulfillment time, all shipped orders
+        (median 6 days).</figcaption>
     </figure>
-    <p><span class="label">Main finding:</span>
-      Lateness is a promising problem, not a shipping problem. Orders
+    <span class="k">Main finding</span>
+    <p class="finding">Lateness is a promising problem, not a shipping problem. Orders
       promised within 7 days are late 65.6% of the time; orders promised 29+
       days are <em>never</em> late. Yet the warehouse ships urgent and
       relaxed orders at exactly the same speed — median 6 days in both
       groups. The fulfillment pipeline simply does not react to urgency, and
       no carrier is better or worse (all three: ~23% late, ~6-day median).</p>
-    <p><span class="label">Business implication:</span>
-      Two levers, both cheap compared with buying capacity: (1) stop
+    <span class="k">Business implication</span>
+    <p>Two levers, both cheap compared with buying capacity: (1) stop
       accepting required dates inside ~10 days unless an expedite process
       exists — at current processing speed those promises fail more often
       than they succeed; (2) create an actual expedite lane that prioritizes
