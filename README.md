@@ -14,8 +14,8 @@ business implication.
 1. Clone this repository and enter it:
 
    ```bash
-   git clone git@github.com:hangzhao1006/HW3.git
-   cd HW3
+   git clone https://github.com/hangzhao1006/northwind-analysis.git
+   cd northwind-analysis
    ```
 
 2. Create the environment and install dependencies:
