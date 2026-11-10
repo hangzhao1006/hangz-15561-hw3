@@ -1,6 +1,7 @@
 """Q2: how concentrated revenue is across the product catalog."""
 
-import numpy as np
+from textwrap import wrap
+
 import plotly.graph_objects as go
 
 import db
@@ -37,88 +38,106 @@ def load_product_revenue():
     return df
 
 
-def plot_top_products(df, top_n=10):
-    """Plot a bar ranking of the best-selling products.
+def plot_top_products(df):
+    """Compare the leading product with the next two products combined.
 
     Args:
-        df (pandas.DataFrame): Output of :func:`load_product_revenue`.
-        top_n (int): How many products to show.
+        df (pandas.DataFrame): Output of `load_product_revenue`.
 
     Returns:
         None. Writes ``docs/figures/q2_top_products.html``.
     """
-    top = df.head(top_n).iloc[::-1]
-    fig = go.Figure(
-        go.Bar(
-            x=top["revenue"] / 1e6,
-            y=top["product"],
-            orientation="h",
-            marker_color=plotting.SERIES[0],
-            text=[f"{v * 100:.1f}%" for v in top["share"]],
-            textposition="outside",
-            textfont=dict(size=12, color=plotting.INK_SECONDARY),
-            customdata=top["category"],
-            hovertemplate=(
-                "%{y} (%{customdata})<br>$%{x:.1f}M · %{text} of total"
-                "<extra></extra>"
-            ),
+    top = df.head(3)
+    bars = ["Top product", "Nos. 2 + 3", "Nos. 2 + 3"]
+    colors = ["#e5b967", "#468676", "#b2d3c3"]
+    fig = go.Figure()
+    for bar, color, item in zip(bars, colors, top.itertuples()):
+        fig.add_trace(
+            go.Bar(
+                x=[item.revenue / 1e6], y=[bar], orientation="h", name=item.product,
+                marker=dict(color=color, line=dict(color=plotting.SURFACE, width=1)),
+                hovertemplate=item.product + "<br>$%{x:.2f}M<extra></extra>",
+            )
         )
-    )
+    revenue = top["revenue"] / 1e6
+    totals = [revenue.iloc[0], revenue.iloc[1:].sum()]
+    for bar, total in zip(bars, totals):
+        fig.add_annotation(
+            x=total, y=bar, text=f"<b>${total:.1f}M</b>",
+            xanchor="left", xshift=5, showarrow=False,
+            font=dict(size=12, color=plotting.INK),
+        )
     fig.update_layout(
-        title="Top 10 products by lifetime revenue (share of company total)",
-        xaxis=dict(title="Revenue (million $)", range=[0, 60]),
-        yaxis=dict(showgrid=False),
-        bargap=0.38,
+        title="One wine outsells the next two combined",
+        showlegend=False, barmode="stack", bargap=0.47,
+        margin=dict(t=15, b=49),
+        xaxis=dict(title="Lifetime discounted revenue", tickprefix="$", ticksuffix="M",
+                   range=[0, max(totals) * 1.37], nticks=5),
+        yaxis=dict(showgrid=False, categoryorder="array", categoryarray=bars[:2][::-1]),
     )
-    plotting.save(fig, "q2_top_products.html", "Q2 · Top products")
+    plotting.save(fig, "q2_top_products.html", "04 · The top seller")
 
 
-def plot_cumulative_share(df):
-    """Plot the cumulative revenue share curve over ranked products.
+def plot_product_mix(df):
+    """Show revenue by product rank in a drillable treemap.
 
     Args:
-        df (pandas.DataFrame): Output of :func:`load_product_revenue`.
+        df (pandas.DataFrame): Output of `load_product_revenue`.
 
     Returns:
         None. Writes ``docs/figures/q2_cumulative_share.html``.
     """
-    n = len(df)
-    x = np.arange(1, n + 1)
+    revenue = df["revenue"] / 1e6
+    ids = ["all"]
+    parents = [""]
+    labels = ["All products"]
+    values = [revenue.sum()]
+    colors = ["#e6e9df"]
+    tiers = (
+        (0, 1, df.iloc[0]["product"], "#e5b967"),
+        (1, 5, "Ranks 2–5", "#b2d3c3"),
+        (5, 20, "Ranks 6–20", "#c5d5e5"),
+        (20, len(df), f"Ranks 21–{len(df)}", "#e2e7dd"),
+    )
+    for start, end, label, color in tiers:
+        if start >= end:
+            continue
+        tier = f"tier-{start + 1}"
+        ids.append(tier)
+        parents.append("all")
+        labels.append(label)
+        values.append(revenue.iloc[start:end].sum())
+        colors.append(color)
+        if start == 0:
+            continue
+        for rank, item in enumerate(df.iloc[start:end].itertuples(), start=start + 1):
+            ids.append(f"product-{rank}")
+            parents.append(tier)
+            labels.append(item.product)
+            values.append(item.revenue / 1e6)
+            colors.append(color)
+
+    display_labels = labels.copy()
+    display_labels[1] = "<br>".join(wrap(display_labels[1], width=9))
     fig = go.Figure(
-        go.Scatter(
-            x=x,
-            y=df["cum_share"] * 100,
-            mode="lines",
-            line=dict(color=plotting.SERIES[0], width=2.4),
-            customdata=df["product"],
-            hovertemplate=(
-                "top %{x} products: %{y:.1f}%<br>#%{x}: %{customdata}"
-                "<extra></extra>"
-            ),
+        go.Treemap(
+            ids=ids, labels=labels, parents=parents, values=values,
+            branchvalues="total", maxdepth=2, sort=False,
+            marker=dict(colors=colors, line=dict(color=plotting.SURFACE, width=2)),
+            tiling=dict(pad=4),
+            text=display_labels,
+            texttemplate="%{text}<br><b>%{percentRoot:.1%}</b>",
+            textfont=dict(size=16, color=plotting.INK),
+            pathbar=dict(visible=True, textfont=dict(size=11)),
+            hovertemplate="<b>%{label}</b><br>$%{value:.2f}M · %{percentRoot:.1%} of all revenue<extra></extra>",
         )
     )
-    for k in (1, 5, 10, 20):
-        share = df["cum_share"].iloc[k - 1] * 100
-        fig.add_trace(
-            go.Scatter(
-                x=[k],
-                y=[share],
-                mode="markers+text",
-                marker=dict(size=10, color=plotting.SERIES[0]),
-                text=[f"top {k}: {share:.0f}%"],
-                textposition="middle right",
-                textfont=dict(size=12, color=plotting.INK_SECONDARY),
-                hoverinfo="skip",
-                showlegend=False,
-            )
-        )
     fig.update_layout(
-        title="Cumulative revenue share of products, ranked best first",
-        xaxis=dict(title="Number of products (of 77, best sellers first)",
-                   range=[0, n + 1]),
-        yaxis=dict(title="Cumulative share of revenue (%)", range=[0, 105]),
+        title="Where every $100 of revenue goes",
+        margin=dict(l=10, r=10, t=8, b=12),
+        uniformtext=dict(minsize=10, mode="hide"),
     )
-    plotting.save(fig, "q2_cumulative_share.html", "Q2 · Cumulative share")
+    plotting.save(fig, "q2_cumulative_share.html", "03 · The product mix")
 
 
 def main():
@@ -144,7 +163,7 @@ def main():
     print(df.head(10)[["product", "category", "revenue", "share"]].round(3))
 
     plot_top_products(df)
-    plot_cumulative_share(df)
+    plot_product_mix(df)
 
 
 if __name__ == "__main__":

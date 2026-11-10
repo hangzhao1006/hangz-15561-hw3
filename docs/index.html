@@ -6,144 +6,212 @@
 <title>Northwind Business Analysis</title>
 <style>
   :root {
-    --paper: #fffefc;
-    --ink: #161513;
-    --ink-2: #454340;
-    --ink-3: #807c75;
-    --rule: #161513;
-    --hairline: #d9d5cc;
-    --link: #1a4d8f;
+    color-scheme: light;
+    --paper: #f4f1e8;
+    --surface: #fffefa;
+    --ink: #162c31;
+    --muted: #506163;
+    --line: #d7d9ce;
+    --accent: #17685f;
+    --gold: #edbd70;
+    --sans: system-ui, -apple-system, sans-serif;
+    --serif: Georgia, "Times New Roman", serif;
   }
+
   * { box-sizing: border-box; }
-  html { -webkit-text-size-adjust: 100%; }
   body {
     margin: 0;
     background: var(--paper);
     color: var(--ink);
-    font: 18px/1.62 Georgia, "Iowan Old Style", "Times New Roman", serif;
+    font: 17px/1.65 var(--sans);
   }
-  a { color: var(--link); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a { color: var(--accent); text-underline-offset: 0.22em; }
+  a:focus-visible { outline: 2px solid currentColor; outline-offset: 5px; }
+  p { margin: 0; }
+  .wrap { width: min(1120px, calc(100% - 64px)); margin-inline: auto; }
 
-  .sheet { max-width: 720px; margin: 0 auto; padding: 0 20px 72px; }
-
-  /* ---- masthead ---- */
-  header { border-top: 4px solid var(--rule); padding-top: 14px; margin-top: 28px; }
-  .kicker {
-    font: 600 12px/1.4 -apple-system, "Helvetica Neue", Arial, sans-serif;
-    letter-spacing: 0.14em;
+  .masthead {
+    background: var(--ink);
+    color: var(--surface);
+    border-top: 5px solid var(--gold);
+    padding: 24px 0 44px;
+  }
+  .mastline, .byline, .eyebrow, .k, .qnum, .summary-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1.5;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--ink-2);
+  }
+  .mastline {
     display: flex;
     justify-content: space-between;
-    gap: 12px;
+    align-items: center;
+    gap: 8px 24px;
     flex-wrap: wrap;
+    border-bottom: 1px solid #476065;
+    padding-bottom: 14px;
+    color: #d2e0dc;
   }
+  .mastline a { color: inherit; }
+  .eyebrow { color: var(--gold); margin: 32px 0 10px; }
+  h1, h2, .summary-value { font-family: var(--serif); }
   h1 {
-    font-size: 44px;
-    line-height: 1.08;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-    margin: 18px 0 10px;
+    max-width: 16ch;
+    margin: 0;
+    font-size: clamp(2.6rem, 6.9vw, 5.75rem);
+    font-weight: 400;
+    line-height: 0.99;
+    letter-spacing: -0.045em;
+    text-wrap: balance;
   }
   .dek {
-    font-size: 20px;
-    line-height: 1.5;
-    color: var(--ink-2);
-    font-style: italic;
-    margin: 0 0 18px;
+    max-width: 60ch;
+    margin-top: 18px;
+    font-size: clamp(1rem, 2.4vw, 1.19rem);
+    color: #d9e6e2;
   }
-  .byline {
-    font: 12px/1.5 -apple-system, "Helvetica Neue", Arial, sans-serif;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ink-3);
-    border-top: 1px solid var(--hairline);
-    border-bottom: 1px solid var(--hairline);
-    padding: 8px 0;
-    margin-bottom: 34px;
-  }
-  .byline b { color: var(--ink); font-weight: 600; }
+  .byline { margin-top: 22px; color: #b8cfcb; }
 
-  /* ---- body copy ---- */
-  p { margin: 0 0 1.05em; }
-  .lede::first-line { font-variant: small-caps; letter-spacing: 0.02em; }
-
-  /* ---- sections ---- */
-  section { margin-top: 52px; }
-  .qhead {
-    border-top: 2px solid var(--rule);
-    padding-top: 12px;
+  .summary {
     display: grid;
-    grid-template-columns: 56px 1fr;
-    gap: 10px;
-    align-items: baseline;
-    margin-bottom: 14px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
   }
-  .qnum {
-    font: 700 13px/1 -apple-system, "Helvetica Neue", Arial, sans-serif;
-    letter-spacing: 0.12em;
-    color: var(--ink-3);
-  }
-  h2 { font-size: 26px; line-height: 1.25; margin: 0; font-weight: 700; }
-
-  .k {
-    display: block;
-    font: 700 11.5px/1 -apple-system, "Helvetica Neue", Arial, sans-serif;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+  .summary a {
+    display: grid;
+    align-content: start;
+    gap: 3px;
+    padding: 20px clamp(16px, 3vw, 30px) 22px;
     color: var(--ink);
-    margin: 22px 0 6px;
+    text-decoration: none;
   }
-  .k + p { margin-top: 0; }
-
-  .finding {
-    border-left: 3px solid var(--rule);
-    padding-left: 16px;
+  .summary a + a { border-inline-start: 1px solid var(--line); }
+  .summary a:hover { background: #e6eee7; }
+  .summary a:focus-visible { outline-offset: -4px; }
+  .summary-label { color: var(--accent); }
+  .summary-value {
+    font-size: clamp(1.85rem, 5vw, 3rem);
+    font-variant-numeric: lining-nums tabular-nums;
+    line-height: 1.05;
   }
+  .summary-detail { font-size: 0.85rem; line-height: 1.45; color: var(--muted); }
 
-  /* ---- figures ---- */
-  figure { margin: 26px 0; }
+  .lede { max-width: 74ch; margin-top: 30px; color: var(--muted); }
+  section { margin-top: 56px; scroll-margin-top: 20px; }
+  .qhead {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 18px;
+    align-items: baseline;
+    border-top: 2px solid var(--ink);
+    padding-top: 15px;
+    margin-bottom: 20px;
+  }
+  .qnum { color: var(--accent); }
+  h2 {
+    margin: 0;
+    font-size: clamp(1.8rem, 3.8vw, 2.75rem);
+    font-weight: 400;
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+  }
+  .section-intro, .section-results, .figures {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+  .section-intro { margin-top: 23px; }
+  .k { display: block; margin-bottom: 5px; color: var(--accent); }
+  .section-results { margin-top: 23px; align-items: start; }
+  .finding { background: #e7efe8; border-inline-start: 3px solid var(--accent); padding: 16px 18px; }
+  .implication { padding: 16px 0; }
+
+  .figures { grid-template-columns: minmax(0, 1.16fr) minmax(0, 1fr); }
+  figure {
+    min-width: 0;
+    margin: 0;
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--accent);
+    background: var(--surface);
+  }
   figure iframe {
-    width: 100%;
     display: block;
-    border: 1px solid var(--hairline);
-    background: var(--paper);
+    width: 100%;
+    border: 0;
+    background: var(--surface);
   }
   figcaption {
-    font: 13px/1.55 -apple-system, "Helvetica Neue", Arial, sans-serif;
-    color: var(--ink-3);
-    margin-top: 8px;
+    min-height: 4.2em;
+    padding: 10px 14px 13px;
+    border-top: 1px solid var(--line);
+    font-size: 0.81rem;
+    line-height: 1.5;
+    color: var(--muted);
   }
-  figcaption b { color: var(--ink-2); font-weight: 600; }
+  figcaption b { color: var(--ink); }
 
   footer {
-    margin-top: 64px;
-    border-top: 2px solid var(--rule);
-    padding-top: 14px;
-    font: 13.5px/1.6 -apple-system, "Helvetica Neue", Arial, sans-serif;
-    color: var(--ink-3);
+    margin: 54px 0 0;
+    border-top: 2px solid var(--ink);
+    padding: 16px 0 38px;
+    font-size: 0.84rem;
+    color: var(--muted);
   }
-  code {
-    font: 0.92em/1 ui-monospace, "SF Mono", Menlo, monospace;
-    color: var(--ink-2);
-  }
+  footer p { max-width: 88ch; }
+  code { font: 0.9em ui-monospace, monospace; overflow-wrap: anywhere; }
 
-  @media (max-width: 540px) {
-    h1 { font-size: 33px; }
-    .dek { font-size: 18px; }
-    .qhead { grid-template-columns: 1fr; gap: 4px; }
+  @media (max-width: 800px) {
+    .figures { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  }
+  @media (max-width: 600px) {
+    body { font-size: 16px; }
+    .wrap { width: calc(100% - 32px); }
+    .masthead { padding: 16px 0 30px; }
+    .eyebrow { margin-top: 23px; }
+    .summary a { padding: 12px 8px 13px; }
+    .summary-label { font-size: 0.62rem; letter-spacing: 0.05em; }
+    .summary-detail { font-size: 0.72rem; }
+    .qhead { gap: 8px; grid-template-columns: minmax(0, 1fr); }
+    .section-intro, .section-results { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+    .implication { padding: 0; }
+    section { margin-top: 38px; }
   }
 </style>
 </head>
 <body>
-<main class="sheet">
-  <header>
-    <div class="kicker"><span>15.561 · AI-Assisted Business Data Analysis</span><span>Homework 3</span></div>
-    <h1>What the order book says: three decisions for Northwind's management</h1>
-    <p class="dek">Eleven years of trading data point to a flagship market quietly shrinking,
-      a revenue line leaning on one wine, and a late-shipment problem that isn't the carriers' fault.</p>
-    <div class="byline"><b>Hang Zhao</b> · Northwind database, Jul 2012 – Oct 2023 · 16,282 orders · $448M revenue</div>
-  </header>
+<header class="masthead">
+  <div class="wrap">
+    <div class="mastline">
+      <span>15.561 · Business Data Analysis</span>
+      <a href="https://github.com/hangzhao1006/hangz-15561-hw2">View source on GitHub ↗</a>
+    </div>
+    <p class="eyebrow">Northwind · Management briefing</p>
+    <h1>What the order book says</h1>
+    <p class="dek">Where to focus sales, which product deserves a backup plan, and where to investigate late shipments.</p>
+    <p class="byline">Hang Zhao · July 2012–October 2023</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <nav class="summary" aria-label="Jump to a finding">
+    <a href="#markets">
+      <span class="summary-label">01 · Markets</span>
+      <strong class="summary-value">−1.7%</strong>
+      <span class="summary-detail">Annualized US revenue change</span>
+    </a>
+    <a href="#products">
+      <span class="summary-label">02 · Products</span>
+      <strong class="summary-value">11.9%</strong>
+      <span class="summary-detail">Revenue share of the top product</span>
+    </a>
+    <a href="#fulfillment">
+      <span class="summary-label">03 · Fulfillment</span>
+      <strong class="summary-value">23.1%</strong>
+      <span class="summary-detail">Share of orders shipped late</span>
+    </a>
+  </nav>
 
   <p class="lede">
     This analysis advises a manager of the trading company represented in the
@@ -152,142 +220,176 @@
     food-and-beverage products. Three questions connect the data to decisions
     about <em>where to sell</em>, <em>what we depend on</em>, and <em>how we
     deliver</em>. All numbers and charts are produced by the Python scripts in
-    the <a href="https://github.com/hangzhao1006/northwind-analysis">GitHub
+    the <a href="https://github.com/hangzhao1006/hangz-15561-hw2">GitHub
     repository</a>; trend comparisons use complete calendar years (2013–2022)
     only, because 2012 and 2023 are partial years in the data.
   </p>
 
-  <section>
+  <section id="markets">
     <div class="qhead"><span class="qnum">Q1</span>
       <h2>Which markets are growing, and where should sales attention go?</h2>
     </div>
-    <span class="k">Why it matters</span>
-    <p>Sales headcount and marketing budget follow revenue history by default,
-      which quietly over-invests in large-but-stalling markets. Knowing which
-      countries are actually growing tells us where the next dollar of sales
-      effort earns the most.</p>
-    <span class="k">Approach</span>
-    <p>Sum order-line revenue (unit price × quantity × (1 − discount)) per
-      customer country per year. To rank markets without being whipsawed by
-      single-year noise, compare the average of the first two complete years
-      (2013–14) with the last two (2021–22) as a compound annual growth rate,
-      for the 11 markets with at least $10M of lifetime revenue.</p>
-    <figure>
-      <iframe src="figures/q1_market_trends.html" height="450" loading="lazy"
-        title="Line chart of annual revenue 2013-2022 for USA, France, Germany and Brazil. USA declines from about $6.2M to $5.0M; France rises to overtake USA in 2022."></iframe>
-      <figcaption><b>Figure 1.</b> Annual revenue in the four largest markets. The USA line
-        starts highest and drifts down; France overtakes it in 2022.</figcaption>
-    </figure>
-    <figure>
-      <iframe src="figures/q1_growth_ranking.html" height="470" loading="lazy"
-        title="Bar chart ranking 11 markets by revenue CAGR. Spain and France grow about +3% per year; USA, Italy and Canada decline by 1.7-3.0% per year."></iframe>
-      <figcaption><b>Figure 2.</b> Growth ranking across all ≥$10M markets. Blue bars grow,
-        red bars decline.</figcaption>
-    </figure>
-    <span class="k">Main finding</span>
-    <p class="finding">The largest market is the one losing ground: USA revenue declined about
-      −1.7% per year (from ~$6.2M in 2013 to ~$5.0M in 2022), and France —
-      growing at +3.0%/yr — overtook it in 2022. Spain (+3.0%/yr) and
-      Argentina (+1.9%/yr) are the fastest-growing mid-size markets, while
-      Canada (−3.0%/yr) and Italy (−2.1%/yr) are shrinking.</p>
-    <span class="k">Business implication</span>
-    <p>Rebalance sales coverage toward France and Spain, where momentum is
-      positive, and treat the USA as a retention problem — diagnose whether
-      the decline is customer churn, order frequency, or basket size before
-      spending more on acquisition there. Canada and Italy are small
-      <em>and</em> shrinking: serve them efficiently rather than invest.</p>
+    <div class="figures">
+      <figure>
+        <iframe src="figures/q1_market_trends.html" height="382" loading="lazy"
+          title="US and French annual revenue. France led briefly in 2017, then finished 2022 at $5.42 million versus $4.99 million for the US."></iframe>
+        <figcaption><b>Figure 1.</b> France edged ahead in 2017 and finished 2022 about
+          $430,000 ahead. Hover over a year to compare both markets.</figcaption>
+      </figure>
+      <figure>
+        <iframe src="figures/q1_growth_ranking.html" height="382" loading="lazy"
+          title="Annualized revenue change in 11 markets. France and Spain grew about 3% a year, while US revenue declined 1.7% a year."></iframe>
+        <figcaption><b>Figure 2.</b> The dots show annualized change across markets with
+          at least $10M in revenue during 2013–2022. Hover to see each market’s size.</figcaption>
+      </figure>
+    </div>
+    <div class="section-intro">
+      <div>
+        <span class="k">Why it matters</span>
+        <p>Sales headcount and marketing budget follow revenue history by default,
+          which quietly over-invests in large-but-stalling markets. Knowing which
+          countries are actually growing tells us where the next dollar of sales
+          effort earns the most.</p>
+      </div>
+      <div>
+        <span class="k">Approach</span>
+        <p>Sum order-line revenue (unit price × quantity × (1 − discount)) per
+          customer country per year. To rank markets without being whipsawed by
+          single-year noise, compare the average of the first two complete years
+          (2013–14) with the last two (2021–22) as a compound annual growth rate,
+          for the 11 markets with at least $10M in revenue during 2013–2022.</p>
+      </div>
+    </div>
+    <div class="section-results">
+      <div class="finding">
+        <span class="k">Main finding</span>
+        <p>The largest market is the one losing ground: USA revenue declined about
+          −1.7% per year (from ~$6.2M in 2013 to ~$5.0M in 2022), and France —
+          growing at +3.0%/yr — finished 2022 ahead of the US. Spain (+3.0%/yr) and
+          Argentina (+1.9%/yr) are the fastest-growing mid-size markets, while
+          Canada (−3.0%/yr) and Italy (−2.1%/yr) are shrinking.</p>
+      </div>
+      <div class="implication">
+        <span class="k">Business implication</span>
+        <p>Rebalance sales coverage toward France and Spain, where momentum is
+          positive, and treat the USA as a retention problem — diagnose whether
+          the decline is customer churn, order frequency, or basket size before
+          spending more on acquisition there. Canada and Italy are small
+          <em>and</em> shrinking: serve them efficiently rather than invest.</p>
+      </div>
+    </div>
   </section>
 
-  <section>
+  <section id="products">
     <div class="qhead"><span class="qnum">Q2</span>
       <h2>How dependent is revenue on a few products?</h2>
     </div>
-    <span class="k">Why it matters</span>
-    <p>Concentration is invisible in day-to-day operations but decisive in a
-      crisis: if one product dominates revenue, a supplier failure, a price
-      shock, or a competitor cloning that product endangers the whole P&amp;L.
-      It also tells procurement where supply contracts deserve redundancy.</p>
-    <span class="k">Approach</span>
-    <p>Rank all 77 products by lifetime discounted revenue, compute each
-      product's share of the $448M total, and trace the cumulative share
-      curve (a Pareto analysis). Two views: the top-10 bar ranking and the
-      full cumulative curve.</p>
-    <figure>
-      <iframe src="figures/q2_top_products.html" height="470" loading="lazy"
-        title="Bar chart of top 10 products by revenue. Côte de Blaye leads with $53.3M (11.9% of total), more than twice the second product."></iframe>
-      <figcaption><b>Figure 3.</b> Top 10 products. One wine, Côte de Blaye, out-earns the
-        next two products combined.</figcaption>
-    </figure>
-    <figure>
-      <iframe src="figures/q2_cumulative_share.html" height="430" loading="lazy"
-        title="Cumulative revenue share curve over 77 ranked products: top 1 product 12%, top 5 28%, top 10 39%, top 20 57% of revenue."></iframe>
-      <figcaption><b>Figure 4.</b> Cumulative share of revenue as products are added
-        best-first.</figcaption>
-    </figure>
-    <span class="k">Main finding</span>
-    <p class="finding">A single premium wine, Côte de Blaye, generates $53.3M — 11.9% of all
-      revenue and 2.2× the #2 product. The top 5 products carry 28% and the
-      top 20 carry 57% of revenue; the bottom half of the catalog (38
-      products) contributes under 20%.</p>
-    <span class="k">Business implication</span>
-    <p>Côte de Blaye deserves key-account treatment on the supply side: a
-      secondary supplier or inventory buffer, and margin monitoring, because
-      a 10% stumble in this one SKU moves total revenue by more than a
-      percentage point. At the other end, the long tail of ~38 slow products
-      is a catalog-rationalization candidate — each adds inventory and
-      ordering overhead while contributing almost nothing.</p>
+    <div class="figures">
+      <figure>
+        <iframe src="figures/q2_cumulative_share.html" height="372" loading="lazy"
+          title="Treemap of lifetime revenue. Côte de Blaye accounts for 11.9%, ranks 2–5 for 16.3%, ranks 6–20 for 28.4%, and the remaining 57 products for 43.4%."></iframe>
+        <figcaption><b>Figure 3.</b> Each rectangle’s area shows its share of revenue.
+          Select a rank group to see its products, then select “All products” to return.</figcaption>
+      </figure>
+      <figure>
+        <iframe src="figures/q2_top_products.html" height="372" loading="lazy"
+          title="Côte de Blaye earned $53.3 million. The next two products together earned $44.0 million."></iframe>
+        <figcaption><b>Figure 4.</b> Côte de Blaye generated $53.3M. Thüringer Rostbratwurst
+          and Mishi Kobe Niku generated $44.0M combined.</figcaption>
+      </figure>
+    </div>
+    <div class="section-intro">
+      <div>
+        <span class="k">Why it matters</span>
+        <p>Concentration is invisible in day-to-day operations but decisive in a
+          crisis: if one product dominates revenue, a supplier failure, a price
+          shock, or a competitor cloning that product endangers the whole P&amp;L.
+          It also tells procurement where supply contracts deserve redundancy.</p>
+      </div>
+      <div>
+        <span class="k">Approach</span>
+        <p>Rank all 77 products by lifetime discounted revenue, compute each
+          product's share of the $448M total, and group products by revenue rank. Compare the
+          leading product’s revenue with the combined revenue of the next two.</p>
+      </div>
+    </div>
+    <div class="section-results">
+      <div class="finding">
+        <span class="k">Main finding</span>
+        <p>A single premium wine, Côte de Blaye, generates $53.3M — 11.9% of all
+          revenue and 2.2× the #2 product. The top 5 products carry 28% and the
+          top 20 carry 57% of revenue; the bottom half of the catalog (38
+          products) contributes under 20%.</p>
+      </div>
+      <div class="implication">
+        <span class="k">Business implication</span>
+        <p>Côte de Blaye deserves key-account treatment on the supply side: a
+          secondary supplier or inventory buffer, and margin monitoring, because
+          a 10% stumble in this one SKU moves total revenue by more than a
+          percentage point. At the other end, the long tail of ~38 slow products
+          is a catalog-rationalization candidate — each adds inventory and
+          ordering overhead while contributing almost nothing.</p>
+      </div>
+    </div>
   </section>
 
-  <section>
+  <section id="fulfillment">
     <div class="qhead"><span class="qnum">Q3</span>
-      <h2>Why are 23% of orders shipped late — and can we fix it?</h2>
+      <h2>Are shorter deadlines linked to late shipments?</h2>
     </div>
-    <span class="k">Why it matters</span>
-    <p>Late shipments erode customer trust and invite penalty clauses. Before
-      spending on carriers or warehouse capacity, we need to know whether
-      lateness is a capacity problem, a carrier problem, or a promising
-      problem.</p>
-    <span class="k">Approach</span>
-    <p>For all 16,261 shipped orders, compute the promised lead time
-      (required date − order date) and the actual fulfillment time
-      (shipped date − order date). Compare the late-shipment rate across
-      promised lead times, and check whether urgent orders are actually
-      processed faster. Carrier differences were tested and ruled out: all
-      three shippers show the same ~23% late rate and ~6-day median.</p>
-    <figure>
-      <iframe src="figures/q3_late_by_promise.html" height="440" loading="lazy"
-        title="Bar chart: share of late orders falls steadily from 97% for same-day promises to 0% for promises of 29 or more days. Dashed line marks the 6-day actual median time to ship."></iframe>
-      <figcaption><b>Figure 5.</b> Late rate by promised lead time. Lateness is almost
-        fully determined by how little time we promised.</figcaption>
-    </figure>
-    <figure>
-      <iframe src="figures/q3_actual_days.html" height="400" loading="lazy"
-        title="Histogram of actual days from order to shipment, right-skewed with median 6 days and a tail past 30 days."></iframe>
-      <figcaption><b>Figure 6.</b> Actual fulfillment time, all shipped orders
-        (median 6 days).</figcaption>
-    </figure>
-    <span class="k">Main finding</span>
-    <p class="finding">Lateness is a promising problem, not a shipping problem. Orders
-      promised within 7 days are late 65.6% of the time; orders promised 29+
-      days are <em>never</em> late. Yet the warehouse ships urgent and
-      relaxed orders at exactly the same speed — median 6 days in both
-      groups. The fulfillment pipeline simply does not react to urgency, and
-      no carrier is better or worse (all three: ~23% late, ~6-day median).</p>
-    <span class="k">Business implication</span>
-    <p>Two levers, both cheap compared with buying capacity: (1) stop
-      accepting required dates inside ~10 days unless an expedite process
-      exists — at current processing speed those promises fail more often
-      than they succeed; (2) create an actual expedite lane that prioritizes
-      short-deadline orders through picking and dispatch. Either would cut
-      the 23% late rate substantially without touching carriers, which the
-      data shows are interchangeable.</p>
+    <div class="figures">
+      <figure>
+        <iframe src="figures/q3_late_by_promise.html" height="350" loading="lazy"
+          title="Late shipment rates by promised deadline. 65.6% for up to 7 days, 15.0% for 8–28 days, and 0.0% for 29 days or more."></iframe>
+        <figcaption><b>Figure 5.</b> The late share fell from 65.6% to 15.0% to 0% across
+          the three deadline groups. Hover over a bar to see order counts.</figcaption>
+      </figure>
+      <figure>
+        <iframe src="figures/q3_actual_days.html" height="350" loading="lazy"
+          title="Cumulative share shipped over the first 21 days for orders with deadlines of up to 7 days or at least 29 days. Both groups reached half shipped at about 6 days."></iframe>
+        <figcaption><b>Figure 6.</b> At each day, the lines show what share of orders in each
+          group had already shipped. About half had shipped by day six in both groups.</figcaption>
+      </figure>
+    </div>
+    <div class="section-intro">
+      <div>
+        <span class="k">Why it matters</span>
+        <p>Late shipments erode customer trust and invite penalty clauses. Before
+          spending on carriers or warehouse capacity, we need to know whether
+          lateness is a capacity problem, a carrier problem, or a promising
+          problem.</p>
+      </div>
+      <div>
+        <span class="k">Approach</span>
+        <p>For all 16,261 shipped orders, compute the promised lead time
+          (required date − order date) and the actual fulfillment time
+          (shipped date − order date). Compare the late-shipment rate across
+          promised lead times, and check whether urgent orders are actually
+          processed faster. The three shippers have similar late rates (22.9%–23.3%) and median times to ship (about 6 days).</p>
+      </div>
+    </div>
+    <div class="section-results">
+      <div class="finding">
+        <span class="k">Main finding</span>
+        <p>Orders with a deadline of 7 days or less were late 65.6% of the time.
+          No orders with a deadline of at least 29 days shipped late in this sample.
+          Both groups had a median time to ship of about 6 days. The gap makes
+          short deadlines and order prioritization worth investigating first.</p>
+      </div>
+      <div class="implication">
+        <span class="k">Business implication</span>
+        <p>Review how short deadlines are set and test a priority lane for urgent
+          orders. Track both time to ship and missed deadlines so a change in
+          deadlines can be distinguished from faster fulfillment.</p>
+      </div>
+    </div>
   </section>
 
   <footer>
     <p>Data: Northwind SQLite sample database (populated build from the
       public <a href="https://github.com/jpwhite3/northwind-SQLite3">jpwhite3/northwind-SQLite3</a>
       project). Reproduce every number and figure with the Python scripts in the
-      <a href="https://github.com/hangzhao1006/northwind-analysis">GitHub repository</a>
+      <a href="https://github.com/hangzhao1006/hangz-15561-hw2">GitHub repository</a>
       (<code>analysis/q1_market_trends.py</code>, <code>q2_product_concentration.py</code>,
       <code>q3_fulfillment.py</code>). Built with the help of Claude Code;
       questions, checks and conclusions by the author.</p>
