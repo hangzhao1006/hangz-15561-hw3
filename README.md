@@ -14,8 +14,8 @@ business implication.
 1. Clone this repository and enter it:
 
    ```bash
-   git clone https://github.com/hangzhao1006/hangz-15561-hw2.git
-   cd hangz-15561-hw2
+   git clone https://github.com/hangzhao1006/hangz-15561-hw3.git
+   cd hangz-15561-hw3
    ```
 
 2. Create the environment and install dependencies:
