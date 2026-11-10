@@ -1,7 +1,7 @@
 """Q3: whether late shipments come from promising or from shipping."""
 
-import matplotlib.pyplot as plt
 import pandas as pd
+import plotly.graph_objects as go
 
 import db
 import plotting
@@ -61,29 +61,39 @@ def plot_late_by_promise(by_window):
             :func:`late_by_promised_window`.
 
     Returns:
-        None. Writes ``docs/figures/q3_late_by_promise.png``.
+        None. Writes ``docs/figures/q3_late_by_promise.html``.
     """
-    fig, ax = plt.subplots(figsize=(8, 4.2))
-    ax.bar(
-        by_window.index,
-        by_window["late_rate"] * 100,
-        color=plotting.CRITICAL,
-        width=0.72,
+    fig = go.Figure(
+        go.Bar(
+            x=by_window.index,
+            y=by_window["late_rate"] * 100,
+            marker_color=plotting.CRITICAL,
+            customdata=by_window["n"],
+            hovertemplate=(
+                "promised %{x} days: %{y:.1f}% late (%{customdata} orders)"
+                "<extra></extra>"
+            ),
+        )
     )
-    ax.set_title("Share of orders shipped late, by promised lead time")
-    ax.set_xlabel("Promised lead time (days between order and required date)")
-    ax.set_ylabel("Orders shipped late (%)")
-    ax.set_ylim(0, 105)
-    ax.axvline(6, color=plotting.BASELINE, linewidth=1, linestyle="--")
-    ax.annotate(
-        "actual median time to ship (6 days)",
-        (6, 97),
-        xytext=(8, 0),
-        textcoords="offset points",
-        fontsize=9,
-        color=plotting.INK_SECONDARY,
+    fig.update_layout(
+        title="Share of orders shipped late, by promised lead time",
+        xaxis=dict(
+            title="Promised lead time (days between order and required date)",
+            showgrid=False,
+        ),
+        yaxis=dict(title="Orders shipped late (%)", range=[0, 108]),
+        bargap=0.28,
     )
-    plotting.save(fig, "q3_late_by_promise.png")
+    fig.add_vline(
+        x=6,
+        line_color=plotting.BASELINE,
+        line_width=1,
+        line_dash="dash",
+        annotation_text="actual median time to ship (6 days)",
+        annotation_position="top right",
+        annotation_font=dict(size=12, color=plotting.INK_SECONDARY),
+    )
+    plotting.save(fig, "q3_late_by_promise.html", "Q3 · Late by promise")
 
 
 def plot_actual_days(df):
@@ -94,19 +104,27 @@ def plot_actual_days(df):
             values above 30 days are clipped into the last bin.
 
     Returns:
-        None. Writes ``docs/figures/q3_actual_days.png``.
+        None. Writes ``docs/figures/q3_actual_days.html``.
     """
-    fig, ax = plt.subplots(figsize=(8, 3.8))
-    ax.hist(
-        df["actual_days"].clip(upper=30),
-        bins=range(0, 31),
-        color=plotting.SERIES[0],
-        rwidth=0.9,
+    days = df["actual_days"].clip(upper=30).astype(int).value_counts().sort_index()
+    fig = go.Figure(
+        go.Bar(
+            x=days.index,
+            y=days.values,
+            marker_color=plotting.SERIES[0],
+            hovertemplate="%{x} days: %{y} orders<extra></extra>",
+        )
     )
-    ax.set_title("Actual time from order to shipment")
-    ax.set_xlabel("Days from order to shipment (30 = 30 or more)")
-    ax.set_ylabel("Orders")
-    plotting.save(fig, "q3_actual_days.png")
+    fig.update_layout(
+        title="Actual time from order to shipment",
+        xaxis=dict(
+            title="Days from order to shipment (30 = 30 or more)",
+            showgrid=False,
+        ),
+        yaxis=dict(title="Orders"),
+        bargap=0.12,
+    )
+    plotting.save(fig, "q3_actual_days.html", "Q3 · Actual days to ship")
 
 
 def main():
@@ -116,7 +134,8 @@ def main():
         None.
 
     Returns:
-        None. Prints to stdout and writes two PNGs.
+        None. Prints to stdout and writes two interactive HTML
+        figures.
     """
     plotting.setup()
     df = load_shipments()

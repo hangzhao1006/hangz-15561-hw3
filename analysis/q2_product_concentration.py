@@ -1,7 +1,7 @@
 """Q2: how concentrated revenue is across the product catalog."""
 
-import matplotlib.pyplot as plt
 import numpy as np
+import plotly.graph_objects as go
 
 import db
 import plotting
@@ -45,26 +45,32 @@ def plot_top_products(df, top_n=10):
         top_n (int): How many products to show.
 
     Returns:
-        None. Writes ``docs/figures/q2_top_products.png``.
+        None. Writes ``docs/figures/q2_top_products.html``.
     """
     top = df.head(top_n).iloc[::-1]
-    fig, ax = plt.subplots(figsize=(8, 4.8))
-    ax.barh(top["product"], top["revenue"] / 1e6, color=plotting.SERIES[0], height=0.62)
-    for y, (_, row) in enumerate(top.iterrows()):
-        ax.annotate(
-            f"{row['share'] * 100:.1f}%",
-            (row["revenue"] / 1e6, y),
-            xytext=(5, 0),
-            textcoords="offset points",
-            va="center",
-            fontsize=8.5,
-            color=plotting.INK_SECONDARY,
+    fig = go.Figure(
+        go.Bar(
+            x=top["revenue"] / 1e6,
+            y=top["product"],
+            orientation="h",
+            marker_color=plotting.SERIES[0],
+            text=[f"{v * 100:.1f}%" for v in top["share"]],
+            textposition="outside",
+            textfont=dict(size=12, color=plotting.INK_SECONDARY),
+            customdata=top["category"],
+            hovertemplate=(
+                "%{y} (%{customdata})<br>$%{x:.1f}M · %{text} of total"
+                "<extra></extra>"
+            ),
         )
-    ax.set_title("Top 10 products by lifetime revenue (share of company total)")
-    ax.set_xlabel("Revenue (million $)")
-    ax.grid(axis="y", visible=False)
-    ax.margins(x=0.1)
-    plotting.save(fig, "q2_top_products.png")
+    )
+    fig.update_layout(
+        title="Top 10 products by lifetime revenue (share of company total)",
+        xaxis=dict(title="Revenue (million $)", range=[0, 60]),
+        yaxis=dict(showgrid=False),
+        bargap=0.38,
+    )
+    plotting.save(fig, "q2_top_products.html", "Q2 · Top products")
 
 
 def plot_cumulative_share(df):
@@ -74,29 +80,45 @@ def plot_cumulative_share(df):
         df (pandas.DataFrame): Output of :func:`load_product_revenue`.
 
     Returns:
-        None. Writes ``docs/figures/q2_cumulative_share.png``.
+        None. Writes ``docs/figures/q2_cumulative_share.html``.
     """
     n = len(df)
     x = np.arange(1, n + 1)
-    fig, ax = plt.subplots(figsize=(8, 4.2))
-    ax.plot(x, df["cum_share"] * 100, color=plotting.SERIES[0])
-    ax.set_title("Cumulative revenue share of products, ranked best first")
-    ax.set_xlabel("Number of products (of 77, best sellers first)")
-    ax.set_ylabel("Cumulative share of revenue (%)")
-    ax.set_ylim(0, 105)
-    ax.set_xlim(0, n + 1)
+    fig = go.Figure(
+        go.Scatter(
+            x=x,
+            y=df["cum_share"] * 100,
+            mode="lines",
+            line=dict(color=plotting.SERIES[0], width=2.4),
+            customdata=df["product"],
+            hovertemplate=(
+                "top %{x} products: %{y:.1f}%<br>#%{x}: %{customdata}"
+                "<extra></extra>"
+            ),
+        )
+    )
     for k in (1, 5, 10, 20):
         share = df["cum_share"].iloc[k - 1] * 100
-        ax.plot([k], [share], "o", color=plotting.SERIES[0], markersize=8)
-        ax.annotate(
-            f"top {k}: {share:.0f}%",
-            (k, share),
-            xytext=(8, -4),
-            textcoords="offset points",
-            fontsize=9,
-            color=plotting.INK_SECONDARY,
+        fig.add_trace(
+            go.Scatter(
+                x=[k],
+                y=[share],
+                mode="markers+text",
+                marker=dict(size=10, color=plotting.SERIES[0]),
+                text=[f"top {k}: {share:.0f}%"],
+                textposition="middle right",
+                textfont=dict(size=12, color=plotting.INK_SECONDARY),
+                hoverinfo="skip",
+                showlegend=False,
+            )
         )
-    plotting.save(fig, "q2_cumulative_share.png")
+    fig.update_layout(
+        title="Cumulative revenue share of products, ranked best first",
+        xaxis=dict(title="Number of products (of 77, best sellers first)",
+                   range=[0, n + 1]),
+        yaxis=dict(title="Cumulative share of revenue (%)", range=[0, 105]),
+    )
+    plotting.save(fig, "q2_cumulative_share.html", "Q2 · Cumulative share")
 
 
 def main():
@@ -106,7 +128,8 @@ def main():
         None.
 
     Returns:
-        None. Prints to stdout and writes two PNGs.
+        None. Prints to stdout and writes two interactive HTML
+        figures.
     """
     plotting.setup()
     df = load_product_revenue()

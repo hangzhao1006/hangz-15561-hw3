@@ -1,7 +1,7 @@
 """Q1: which customer markets grow or decline, 2013-2022."""
 
-import matplotlib.pyplot as plt
 import pandas as pd
+import plotly.graph_objects as go
 
 import db
 import plotting
@@ -72,34 +72,32 @@ def plot_top_market_trends(df, top_n=4):
             revenue; capped at 4 by the palette.
 
     Returns:
-        None. Writes ``docs/figures/q1_market_trends.png``.
+        None. Writes ``docs/figures/q1_market_trends.html``.
     """
     top = (
         df.groupby("country")["revenue"].sum().sort_values(ascending=False).head(top_n)
     )
-    fig, ax = plt.subplots(figsize=(8, 4.5))
+    fig = go.Figure()
     for color, country in zip(plotting.SERIES, top.index):
         series = df[df["country"] == country].set_index("year")["revenue"] / 1e6
-        ax.plot(series.index, series.values, color=color, label=country)
-        ax.annotate(
-            country,
-            (series.index[-1], series.values[-1]),
-            xytext=(6, 0),
-            textcoords="offset points",
-            va="center",
-            fontsize=9.5,
-            color=color,
-            fontweight="bold",
+        fig.add_trace(
+            go.Scatter(
+                x=series.index,
+                y=series.values,
+                name=country,
+                mode="lines+markers",
+                line=dict(color=color, width=2.4),
+                marker=dict(size=6),
+                hovertemplate="%{y:.2f}M<extra>" + country + "</extra>",
+            )
         )
-    ax.set_title("Annual revenue in the four largest markets")
-    ax.set_ylabel("Revenue (million $)")
-    ax.set_xlabel("Order year")
-    ax.set_ylim(bottom=0)
-    ax.set_xticks(range(FIRST_FULL_YEAR, LAST_FULL_YEAR + 1))
-    ax.legend(loc="lower left", ncol=4)
-    ax.margins(x=0.02)
-    fig.subplots_adjust(right=0.88)
-    plotting.save(fig, "q1_market_trends.png")
+    fig.update_layout(
+        title="Annual revenue in the four largest markets",
+        hovermode="x unified",
+        xaxis=dict(title="Order year", dtick=1, showgrid=False),
+        yaxis=dict(title="Revenue (million $)", rangemode="tozero"),
+    )
+    plotting.save(fig, "q1_market_trends.html", "Q1 · Market trends")
 
 
 def plot_growth_ranking(growth, min_revenue=1e7):
@@ -111,29 +109,34 @@ def plot_growth_ranking(growth, min_revenue=1e7):
             market to appear.
 
     Returns:
-        None. Writes ``docs/figures/q1_growth_ranking.png``.
+        None. Writes ``docs/figures/q1_growth_ranking.html``.
     """
     g = growth[growth["total_revenue"] >= min_revenue].sort_values("cagr")
     colors = [plotting.SERIES[0] if v >= 0 else plotting.CRITICAL for v in g["cagr"]]
-    fig, ax = plt.subplots(figsize=(8, 0.34 * len(g) + 1.2))
-    ax.barh(g.index, g["cagr"] * 100, color=colors, height=0.62)
-    ax.axvline(0, color=plotting.BASELINE, linewidth=1)
-    ax.set_title("Revenue growth by market, 2013–14 vs 2021–22 (CAGR)")
-    ax.set_xlabel("Compound annual growth rate (%)")
-    ax.grid(axis="y", visible=False)
-    for y, (country, row) in enumerate(g.iterrows()):
-        ax.annotate(
-            f"{row['cagr'] * 100:+.1f}%",
-            (row["cagr"] * 100, y),
-            xytext=(5 if row["cagr"] >= 0 else -5, 0),
-            textcoords="offset points",
-            va="center",
-            ha="left" if row["cagr"] >= 0 else "right",
-            fontsize=8.5,
-            color=plotting.INK_SECONDARY,
+    fig = go.Figure(
+        go.Bar(
+            x=g["cagr"] * 100,
+            y=g.index,
+            orientation="h",
+            marker_color=colors,
+            text=[f"{v * 100:+.1f}%" for v in g["cagr"]],
+            textposition="outside",
+            textfont=dict(size=12, color=plotting.INK_SECONDARY),
+            customdata=g["total_revenue"] / 1e6,
+            hovertemplate=(
+                "%{y}: %{x:+.1f}%/yr · $%{customdata:.0f}M total"
+                "<extra></extra>"
+            ),
         )
-    ax.margins(x=0.15)
-    plotting.save(fig, "q1_growth_ranking.png")
+    )
+    fig.update_layout(
+        title="Revenue growth by market, 2013–14 vs 2021–22 (CAGR)",
+        xaxis=dict(title="Compound annual growth rate (%)", range=[-4.2, 4.2]),
+        yaxis=dict(showgrid=False),
+        bargap=0.38,
+    )
+    fig.add_vline(x=0, line_color=plotting.BASELINE, line_width=1)
+    plotting.save(fig, "q1_growth_ranking.html", "Q1 · Growth ranking")
 
 
 def main():
@@ -143,7 +146,8 @@ def main():
         None.
 
     Returns:
-        None. Prints to stdout and writes two PNGs.
+        None. Prints to stdout and writes two interactive HTML
+        figures.
     """
     plotting.setup()
     df = load_market_revenue()

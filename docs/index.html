@@ -103,7 +103,12 @@
 
   /* ---- figures ---- */
   figure { margin: 26px 0; }
-  figure img { width: 100%; height: auto; display: block; border: 1px solid var(--hairline); }
+  figure iframe {
+    width: 100%;
+    display: block;
+    border: 1px solid var(--hairline);
+    background: var(--paper);
+  }
   figcaption {
     font: 13px/1.55 -apple-system, "Helvetica Neue", Arial, sans-serif;
     color: var(--ink-3);
@@ -168,12 +173,14 @@
       (2013–14) with the last two (2021–22) as a compound annual growth rate,
       for the 11 markets with at least $10M of lifetime revenue.</p>
     <figure>
-      <img src="figures/q1_market_trends.png" alt="Line chart of annual revenue 2013-2022 for USA, France, Germany and Brazil. USA declines from about $6.2M to $5.0M; France rises to overtake USA in 2022.">
+      <iframe src="figures/q1_market_trends.html" height="450" loading="lazy"
+        title="Line chart of annual revenue 2013-2022 for USA, France, Germany and Brazil. USA declines from about $6.2M to $5.0M; France rises to overtake USA in 2022."></iframe>
       <figcaption><b>Figure 1.</b> Annual revenue in the four largest markets. The USA line
         starts highest and drifts down; France overtakes it in 2022.</figcaption>
     </figure>
     <figure>
-      <img src="figures/q1_growth_ranking.png" alt="Bar chart ranking 11 markets by revenue CAGR. Spain and France grow about +3% per year; USA, Italy and Canada decline by 1.7-3.0% per year.">
+      <iframe src="figures/q1_growth_ranking.html" height="470" loading="lazy"
+        title="Bar chart ranking 11 markets by revenue CAGR. Spain and France grow about +3% per year; USA, Italy and Canada decline by 1.7-3.0% per year."></iframe>
       <figcaption><b>Figure 2.</b> Growth ranking across all ≥$10M markets. Blue bars grow,
         red bars decline.</figcaption>
     </figure>
@@ -206,12 +213,14 @@
       curve (a Pareto analysis). Two views: the top-10 bar ranking and the
       full cumulative curve.</p>
     <figure>
-      <img src="figures/q2_top_products.png" alt="Bar chart of top 10 products by revenue. Côte de Blaye leads with $53.3M (11.9% of total), more than twice the second product.">
+      <iframe src="figures/q2_top_products.html" height="470" loading="lazy"
+        title="Bar chart of top 10 products by revenue. Côte de Blaye leads with $53.3M (11.9% of total), more than twice the second product."></iframe>
       <figcaption><b>Figure 3.</b> Top 10 products. One wine, Côte de Blaye, out-earns the
         next two products combined.</figcaption>
     </figure>
     <figure>
-      <img src="figures/q2_cumulative_share.png" alt="Cumulative revenue share curve over 77 ranked products: top 1 product 12%, top 5 28%, top 10 39%, top 20 57% of revenue.">
+      <iframe src="figures/q2_cumulative_share.html" height="430" loading="lazy"
+        title="Cumulative revenue share curve over 77 ranked products: top 1 product 12%, top 5 28%, top 10 39%, top 20 57% of revenue."></iframe>
       <figcaption><b>Figure 4.</b> Cumulative share of revenue as products are added
         best-first.</figcaption>
     </figure>
@@ -246,12 +255,14 @@
       processed faster. Carrier differences were tested and ruled out: all
       three shippers show the same ~23% late rate and ~6-day median.</p>
     <figure>
-      <img src="figures/q3_late_by_promise.png" alt="Bar chart: share of late orders falls steadily from 97% for same-day promises to 0% for promises of 29 or more days. Dashed line marks the 6-day actual median time to ship.">
+      <iframe src="figures/q3_late_by_promise.html" height="440" loading="lazy"
+        title="Bar chart: share of late orders falls steadily from 97% for same-day promises to 0% for promises of 29 or more days. Dashed line marks the 6-day actual median time to ship."></iframe>
       <figcaption><b>Figure 5.</b> Late rate by promised lead time. Lateness is almost
         fully determined by how little time we promised.</figcaption>
     </figure>
     <figure>
-      <img src="figures/q3_actual_days.png" alt="Histogram of actual days from order to shipment, right-skewed with median 6 days and a tail past 30 days.">
+      <iframe src="figures/q3_actual_days.html" height="400" loading="lazy"
+        title="Histogram of actual days from order to shipment, right-skewed with median 6 days and a tail past 30 days."></iframe>
       <figcaption><b>Figure 6.</b> Actual fulfillment time, all shipped orders
         (median 6 days).</figcaption>
     </figure>
