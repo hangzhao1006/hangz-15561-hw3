@@ -3,70 +3,182 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Northwind Analysis</title>
+<title>Northwind Business Analysis</title>
 <style>
   :root {
-    --bg: #ffffff;
-    --text: #1f2430;
-    --muted: #5c6470;
+    --bg: #f9f9f7;
+    --surface: #fcfcfb;
+    --text: #0b0b0b;
+    --muted: #52514e;
     --accent: #2457a7;
-    --card: #f5f7fa;
+    --border: rgba(11, 11, 11, 0.10);
   }
   body {
     margin: 0;
     background: var(--bg);
     color: var(--text);
-    font: 17px/1.6 Georgia, "Times New Roman", serif;
+    font: 17px/1.65 Georgia, "Times New Roman", serif;
   }
-  main { max-width: 860px; margin: 0 auto; padding: 48px 16px; }
+  main { max-width: 860px; margin: 0 auto; padding: 48px 16px 80px; }
   h1 { font-size: 2rem; margin-bottom: 0.2em; }
-  h2 { color: var(--accent); margin-top: 2.5em; }
+  h2 { color: var(--accent); margin-top: 2.6em; font-size: 1.35rem; }
   .subtitle { color: var(--muted); margin-top: 0; }
-  section { background: var(--card); border-radius: 10px; padding: 24px; margin-top: 1em; }
-  figure { margin: 1.5em 0; text-align: center; }
+  section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-top: 1em;
+  }
+  figure { margin: 1.6em 0; text-align: center; }
   figure img { max-width: 100%; height: auto; border-radius: 6px; }
-  figcaption { color: var(--muted); font-size: 0.9em; margin-top: 0.5em; }
+  figcaption { color: var(--muted); font-size: 0.85em; margin-top: 0.6em; text-align: left; }
   .label { font-weight: bold; color: var(--accent); }
+  .note { color: var(--muted); font-size: 0.9em; }
+  footer { margin-top: 3em; color: var(--muted); font-size: 0.9em; border-top: 1px solid var(--border); padding-top: 1em; }
+  a { color: var(--accent); }
+  code { font-size: 0.85em; background: #f0efec; padding: 1px 5px; border-radius: 4px; }
 </style>
 </head>
 <body>
 <main>
   <h1>Northwind Business Analysis</h1>
-  <p class="subtitle">15.561 HW 3 — AI-Assisted Business Data Analysis</p>
+  <p class="subtitle">15.561 HW 3 — AI-Assisted Business Data Analysis · Hang Zhao</p>
 
-  <h2>Question 1: (to be filled in)</h2>
+  <p>
+    This page advises a manager of the trading company represented in the
+    Northwind database: 16,282 orders and 609,283 order lines from 93
+    customers in 21 countries, placed between July 2012 and October 2023,
+    roughly $448M of lifetime revenue across 77 food-and-beverage products.
+    Three questions connect the data to decisions about <em>where to sell</em>,
+    <em>what we depend on</em>, and <em>how we deliver</em>. All numbers and
+    charts are produced by the Python scripts in the
+    <a href="https://github.com/hangzhao1006/northwind-analysis">GitHub repository</a>;
+    trend comparisons use complete calendar years (2013–2022) only, because
+    2012 and 2023 are partial years in the data.
+  </p>
+
+  <h2>Q1 · Which markets are growing, and where should sales attention go?</h2>
   <section>
-    <p><span class="label">Why it matters:</span> …</p>
-    <p><span class="label">Approach:</span> …</p>
+    <p><span class="label">Why it matters:</span>
+      Sales headcount and marketing budget follow revenue history by default,
+      which quietly over-invests in large-but-stalling markets. Knowing which
+      countries are actually growing tells us where the next dollar of sales
+      effort earns the most.</p>
+    <p><span class="label">Approach:</span>
+      Sum order-line revenue (unit price × quantity × (1 − discount)) per
+      customer country per year. To rank markets without being whipsawed by
+      single-year noise, compare the average of the first two complete years
+      (2013–14) with the last two (2021–22) as a compound annual growth rate,
+      for the 11 markets with at least $10M of lifetime revenue.</p>
     <figure>
-      <!-- <img src="../figures/q1.png" alt="…"> -->
-      <figcaption>…</figcaption>
+      <img src="figures/q1_market_trends.png" alt="Line chart of annual revenue 2013-2022 for USA, France, Germany and Brazil. USA declines from about $6.2M to $5.0M; France rises to overtake USA in 2022.">
+      <figcaption>Annual revenue in the four largest markets. The USA line starts
+        highest and drifts down; France overtakes it in 2022.</figcaption>
     </figure>
-    <p><span class="label">Main finding:</span> …</p>
-    <p><span class="label">Business implication:</span> …</p>
+    <figure>
+      <img src="figures/q1_growth_ranking.png" alt="Bar chart ranking 11 markets by revenue CAGR. Spain and France grow about +3% per year; USA, Italy and Canada decline by 1.7-3.0% per year.">
+      <figcaption>Growth ranking across all ≥$10M markets. Blue bars grow,
+        red bars decline.</figcaption>
+    </figure>
+    <p><span class="label">Main finding:</span>
+      The largest market is the one losing ground: USA revenue declined about
+      −1.7% per year (from ~$6.2M in 2013 to ~$5.0M in 2022), and France —
+      growing at +3.0%/yr — overtook it in 2022. Spain (+3.0%/yr) and
+      Argentina (+1.9%/yr) are the fastest-growing mid-size markets, while
+      Canada (−3.0%/yr) and Italy (−2.1%/yr) are shrinking.</p>
+    <p><span class="label">Business implication:</span>
+      Rebalance sales coverage toward France and Spain, where momentum is
+      positive, and treat the USA as a retention problem — diagnose whether
+      the decline is customer churn, order frequency, or basket size before
+      spending more on acquisition there. Canada and Italy are small
+      <em>and</em> shrinking: serve them efficiently rather than invest.</p>
   </section>
 
-  <h2>Question 2: (to be filled in)</h2>
+  <h2>Q2 · How dependent is revenue on a few products?</h2>
   <section>
-    <p><span class="label">Why it matters:</span> …</p>
-    <p><span class="label">Approach:</span> …</p>
+    <p><span class="label">Why it matters:</span>
+      Concentration is invisible in day-to-day operations but decisive in a
+      crisis: if one product dominates revenue, a supplier failure, a price
+      shock, or a competitor cloning that product endangers the whole P&amp;L.
+      It also tells procurement where supply contracts deserve redundancy.</p>
+    <p><span class="label">Approach:</span>
+      Rank all 77 products by lifetime discounted revenue, compute each
+      product's share of the $448M total, and trace the cumulative share
+      curve (a Pareto analysis). Two views: the top-10 bar ranking and the
+      full cumulative curve.</p>
     <figure>
-      <figcaption>…</figcaption>
+      <img src="figures/q2_top_products.png" alt="Bar chart of top 10 products by revenue. Côte de Blaye leads with $53.3M (11.9% of total), more than twice the second product.">
+      <figcaption>Top 10 products. One wine, Côte de Blaye, out-earns the next
+        two products combined.</figcaption>
     </figure>
-    <p><span class="label">Main finding:</span> …</p>
-    <p><span class="label">Business implication:</span> …</p>
+    <figure>
+      <img src="figures/q2_cumulative_share.png" alt="Cumulative revenue share curve over 77 ranked products: top 1 product 12%, top 5 28%, top 10 39%, top 20 57% of revenue.">
+      <figcaption>Cumulative share of revenue as products are added best-first.</figcaption>
+    </figure>
+    <p><span class="label">Main finding:</span>
+      A single premium wine, Côte de Blaye, generates $53.3M — 11.9% of all
+      revenue and 2.2× the #2 product. The top 5 products carry 28% and the
+      top 20 carry 57% of revenue; the bottom half of the catalog (38
+      products) contributes under 20%.</p>
+    <p><span class="label">Business implication:</span>
+      Côte de Blaye deserves key-account treatment on the supply side: a
+      secondary supplier or inventory buffer, and margin monitoring, because
+      a 10% stumble in this one SKU moves total revenue by more than a
+      percentage point. At the other end, the long tail of ~38 slow products
+      is a catalog-rationalization candidate — each adds inventory and
+      ordering overhead while contributing almost nothing.</p>
   </section>
 
-  <h2>Question 3: (to be filled in)</h2>
+  <h2>Q3 · Why are 23% of orders shipped late — and can we fix it?</h2>
   <section>
-    <p><span class="label">Why it matters:</span> …</p>
-    <p><span class="label">Approach:</span> …</p>
+    <p><span class="label">Why it matters:</span>
+      Late shipments erode customer trust and invite penalty clauses. Before
+      spending on carriers or warehouse capacity, we need to know whether
+      lateness is a capacity problem, a carrier problem, or a promising
+      problem.</p>
+    <p><span class="label">Approach:</span>
+      For all 16,261 shipped orders, compute the promised lead time
+      (required date − order date) and the actual fulfillment time
+      (shipped date − order date). Compare the late-shipment rate across
+      promised lead times, and check whether urgent orders are actually
+      processed faster. Carrier differences were tested and ruled out: all
+      three shippers show the same ~23% late rate and ~6-day median.</p>
     <figure>
-      <figcaption>…</figcaption>
+      <img src="figures/q3_late_by_promise.png" alt="Bar chart: share of late orders falls steadily from 97% for same-day promises to 0% for promises of 29 or more days. Dashed line marks the 6-day actual median time to ship.">
+      <figcaption>Late rate by promised lead time. Lateness is almost fully
+        determined by how little time we promised.</figcaption>
     </figure>
-    <p><span class="label">Main finding:</span> …</p>
-    <p><span class="label">Business implication:</span> …</p>
+    <figure>
+      <img src="figures/q3_actual_days.png" alt="Histogram of actual days from order to shipment, right-skewed with median 6 days and a tail past 30 days.">
+      <figcaption>Actual fulfillment time, all shipped orders (median 6 days).</figcaption>
+    </figure>
+    <p><span class="label">Main finding:</span>
+      Lateness is a promising problem, not a shipping problem. Orders
+      promised within 7 days are late 65.6% of the time; orders promised 29+
+      days are <em>never</em> late. Yet the warehouse ships urgent and
+      relaxed orders at exactly the same speed — median 6 days in both
+      groups. The fulfillment pipeline simply does not react to urgency, and
+      no carrier is better or worse (all three: ~23% late, ~6-day median).</p>
+    <p><span class="label">Business implication:</span>
+      Two levers, both cheap compared with buying capacity: (1) stop
+      accepting required dates inside ~10 days unless an expedite process
+      exists — at current processing speed those promises fail more often
+      than they succeed; (2) create an actual expedite lane that prioritizes
+      short-deadline orders through picking and dispatch. Either would cut
+      the 23% late rate substantially without touching carriers, which the
+      data shows are interchangeable.</p>
   </section>
+
+  <footer>
+    <p>Data: Northwind SQLite sample database (populated build from the
+      public <a href="https://github.com/jpwhite3/northwind-SQLite3">jpwhite3/northwind-SQLite3</a>
+      project). Reproduce every number and figure with the Python scripts in the
+      <a href="https://github.com/hangzhao1006/northwind-analysis">GitHub repository</a>
+      (<code>analysis/q1_market_trends.py</code>, <code>q2_product_concentration.py</code>,
+      <code>q3_fulfillment.py</code>). Built with the help of Claude Code;
+      questions, checks and conclusions by the author.</p>
+  </footer>
 </main>
 </body>
 </html>
