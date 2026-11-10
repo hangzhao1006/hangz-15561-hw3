@@ -39,6 +39,8 @@ TEMPLATE = go.layout.Template(
             tickcolor=MUTED,
             tickfont=dict(color=MUTED, size=12),
             title_font=dict(size=13, color=INK_SECONDARY),
+            title_standoff=12,
+            automargin=True,
             zeroline=False,
         ),
         yaxis=dict(
@@ -47,6 +49,8 @@ TEMPLATE = go.layout.Template(
             tickcolor=MUTED,
             tickfont=dict(color=MUTED, size=12),
             title_font=dict(size=13, color=INK_SECONDARY),
+            title_standoff=10,
+            automargin=True,
             zeroline=False,
         ),
         legend=dict(
@@ -62,7 +66,7 @@ TEMPLATE = go.layout.Template(
             bordercolor=BASELINE,
             font=dict(family=SANS, size=13, color=INK),
         ),
-        margin=dict(l=10, r=10, t=64, b=10),
+        margin=dict(l=10, r=10, t=64, b=48),
     )
 )
 
