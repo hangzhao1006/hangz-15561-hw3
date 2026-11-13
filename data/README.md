@@ -1,21 +1,23 @@
 # Data
 
-The analysis uses the Northwind SQLite database, placed at:
+The analysis uses the **course-provided Northwind dataset** (15.561),
+distributed as a Google Sheets workbook and committed here as:
 
 ```
-data/northwind.db
+data/course/northwind_course.xlsx
 ```
 
-The database file itself is not committed to the repository. To
-reproduce the results, download the populated Northwind database
-(~24 MB) from the public
-[jpwhite3/northwind-SQLite3](https://github.com/jpwhite3/northwind-SQLite3)
-project:
+Snapshot: 830 orders and 2,155 order-detail lines from 91 customers in
+21 countries, order dates July 1996 – May 1998, 77 products.
+
+The SQLite database the scripts read is **built from that workbook** and
+is not committed. To (re)build it:
 
 ```bash
-curl -sL -o data/northwind.db https://github.com/jpwhite3/northwind-SQLite3/raw/main/dist/northwind.db
+cd analysis
+python build_db.py   # writes data/northwind.db
 ```
 
-Snapshot used for this homework: 16,282 orders and 609,283 order-detail
-rows, with order dates from 2012-07 to 2023-10. All analysis scripts in
-`analysis/` read from this path.
+The build maps each worksheet to its canonical Northwind table name
+(e.g. "Orders Details" → `Order Details`, "Product" → `Products`). All
+analysis scripts in `analysis/` read from `data/northwind.db`.

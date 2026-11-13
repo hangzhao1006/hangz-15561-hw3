@@ -1,4 +1,4 @@
-"""Q1: which customer markets grow or decline, 2013-2022."""
+"""Q1: which customer markets grow or stall, Jul 1996 - May 1998."""
 
 import pandas as pd
 import plotly.graph_objects as go
@@ -6,142 +6,141 @@ import plotly.graph_objects as go
 import db
 import plotting
 
-# 2012 starts in July and 2023 ends in October, so only complete years
-# are comparable year over year.
-FIRST_FULL_YEAR = 2013
-LAST_FULL_YEAR = 2022
+# The data covers Jul 1996 - May 1998. The only pair of windows with
+# identical month coverage is Jul-May vs Jul-May one year later.
+YEAR1 = ("1996-07-01", "1997-06-01")  # Jul 1996 - May 1997
+YEAR2 = ("1997-07-01", "1998-06-01")  # Jul 1997 - May 1998
 
 SQL = """
-SELECT CAST(strftime('%Y', o.OrderDate) AS INTEGER) AS year,
+SELECT o.OrderDate AS order_date,
        c.Country AS country,
        SUM(d.UnitPrice * d.Quantity * (1 - d.Discount)) AS revenue
 FROM Orders o
 JOIN "Order Details" d ON d.OrderID = o.OrderID
 JOIN Customers c ON c.CustomerID = o.CustomerID
-GROUP BY year, country
+GROUP BY o.OrderID
 """
 
 
 def load_market_revenue():
-    """Load annual revenue per customer country, complete years only.
+    """Load per-order revenue with order date and customer country.
 
     Args:
         None.
 
     Returns:
-        pandas.DataFrame: One row per (year, country) with columns
-            ``year`` (int), ``country`` (str) and ``revenue`` (float,
-            discounted dollars), limited to 2013-2022.
+        pandas.DataFrame: One row per order with columns ``order_date``
+            (datetime), ``country`` (str) and ``revenue`` (float,
+            discounted dollars).
     """
     df = db.query(SQL)
-    df = df[(df["year"] >= FIRST_FULL_YEAR) & (df["year"] <= LAST_FULL_YEAR)]
+    df["order_date"] = pd.to_datetime(df["order_date"])
     return df
 
 
 def growth_table(df):
-    """Compute per-country growth between the first and last two years.
+    """Compute same-month year-over-year growth per country.
+
+    Compares Jul 1996 - May 1997 against Jul 1997 - May 1998, the two
+    windows with identical calendar-month coverage, so partial years
+    cannot bias the comparison.
 
     Args:
         df (pandas.DataFrame): Output of :func:`load_market_revenue`.
 
     Returns:
-        pandas.DataFrame: Indexed by country, sorted by ``cagr``
+        pandas.DataFrame: Indexed by country, sorted by ``growth``
             descending, with columns ``total_revenue`` (float, dollars
-            over all years), ``start_avg`` (float, mean annual revenue
-            2013-14), ``end_avg`` (float, mean annual revenue 2021-22)
-            and ``cagr`` (float, compound annual growth rate between
-            the two window midpoints as a fraction).
+            over the whole dataset), ``year1`` and ``year2`` (float,
+            window revenue in dollars) and ``growth`` (float,
+            year-over-year change as a fraction).
     """
-    total = df.groupby("country")["revenue"].sum()
-    first = df[df["year"] <= FIRST_FULL_YEAR + 1].groupby("country")["revenue"].mean()
-    last = df[df["year"] >= LAST_FULL_YEAR - 1].groupby("country")["revenue"].mean()
-    n_years = LAST_FULL_YEAR - FIRST_FULL_YEAR - 1  # between the two window midpoints
-    cagr = (last / first) ** (1 / n_years) - 1
+    def window(bounds):
+        lo, hi = bounds
+        sub = df[(df["order_date"] >= lo) & (df["order_date"] < hi)]
+        return sub.groupby("country")["revenue"].sum()
+
     out = pd.DataFrame(
-        {"total_revenue": total, "start_avg": first, "end_avg": last, "cagr": cagr}
+        {
+            "total_revenue": df.groupby("country")["revenue"].sum(),
+            "year1": window(YEAR1),
+            "year2": window(YEAR2),
+        }
     ).dropna()
-    return out.sort_values("cagr", ascending=False)
+    out["growth"] = out["year2"] / out["year1"] - 1
+    return out.sort_values("growth", ascending=False)
 
 
 def plot_market_race(df):
-    """Compare annual revenue in the United States and France.
+    """Plot quarterly revenue for the three largest markets.
 
     Args:
-        df (pandas.DataFrame): Output of `load_market_revenue`.
+        df (pandas.DataFrame): Output of :func:`load_market_revenue`.
 
     Returns:
         None. Writes ``docs/figures/q1_market_trends.html``.
     """
-    annual = df.pivot(index="year", columns="country", values="revenue") / 1e6
-    annual = annual[["USA", "France"]].dropna()
+    quarterly = (
+        df.set_index("order_date")
+        .groupby("country")
+        .resample("QE")["revenue"]
+        .sum()
+        .unstack(0)
+    ) / 1e3
+    quarterly = quarterly.loc[: "1998-03-31"]  # 1998 Q2 has only 5 weeks
+    labels = [f"{ts.year} Q{ts.quarter}" for ts in quarterly.index]
     fig = go.Figure()
     for country, color, dash, symbol in (
-        ("USA", plotting.CRITICAL, "dash", "square"),
-        ("France", plotting.SERIES[0], "solid", "circle"),
+        ("USA", plotting.SERIES[0], "solid", "circle"),
+        ("Germany", plotting.SERIES[1], "solid", "square"),
+        ("France", plotting.CRITICAL, "dash", "diamond"),
     ):
         fig.add_trace(
             go.Scatter(
-                x=annual.index,
-                y=annual[country],
+                x=labels,
+                y=quarterly[country],
                 name=country,
                 mode="lines+markers",
                 line=dict(color=color, width=3, dash=dash),
                 marker=dict(size=7, symbol=symbol),
-                hovertemplate=country + ": $%{y:.2f}M<extra></extra>",
+                hovertemplate=country + ": $%{y:.1f}K<extra></extra>",
             )
         )
-
-    end = annual.iloc[-1]
-    for country, color in (("USA", plotting.CRITICAL), ("France", plotting.SERIES[0])):
         fig.add_annotation(
-            x=annual.index[-1],
-            y=end[country],
-            text=f"<b>{country} · ${end[country]:.2f}M</b>",
+            x=labels[-1],
+            y=quarterly[country].iloc[-1],
+            text=f"<b>{country}</b>",
             showarrow=False,
-            xanchor="right",
-            xshift=-4,
-            yshift=30 if end[country] == end.max() else -19,
+            xanchor="left",
+            xshift=6,
             font=dict(color=color, size=12),
             bgcolor=plotting.SURFACE,
         )
-    fig.add_vrect(
-        x0=annual.index[-1] - 0.45,
-        x1=annual.index[-1] + 0.25,
-        fillcolor="#e5ede5",
-        opacity=0.85,
-        layer="below",
-        line_width=0,
-    )
     fig.update_layout(
-        title="France pulled ahead of the US in 2022",
+        title="The US and Germany pulled away; France stood still",
         hovermode="x unified",
         showlegend=False,
-        margin=dict(t=22),
-        xaxis=dict(
-            title="Order year", tickmode="array", tickvals=[2013, 2017, 2020, 2022],
-            range=[annual.index[0] - 0.2, annual.index[-1] + 0.25], showgrid=False,
-        ),
-        yaxis=dict(
-            title="Annual revenue", tickprefix="$", ticksuffix="M", dtick=0.5,
-            range=[annual.min().min() - 0.35, annual.max().max() + 0.38],
-        ),
+        margin=dict(t=22, r=66),
+        xaxis=dict(title="Order quarter", showgrid=False),
+        yaxis=dict(title="Quarterly revenue", tickprefix="$", ticksuffix="K",
+                   rangemode="tozero"),
     )
-    plotting.save(fig, "q1_market_trends.html", "01 · The market shift")
+    plotting.save(fig, "q1_market_trends.html", "01 · The market race")
 
 
-def plot_growth_ranking(growth, min_revenue=1e7):
-    """Plot annualized revenue change against a zero-growth baseline.
+def plot_growth_ranking(growth, min_revenue=3e4):
+    """Plot same-month YoY revenue growth against a zero baseline.
 
     Args:
-        growth (pandas.DataFrame): Output of `growth_table`.
+        growth (pandas.DataFrame): Output of :func:`growth_table`.
         min_revenue (float): Minimum total revenue in dollars for a
             market to appear.
 
     Returns:
         None. Writes ``docs/figures/q1_growth_ranking.html``.
     """
-    ranked = growth[growth["total_revenue"] >= min_revenue].sort_values("cagr")
-    rates = ranked["cagr"] * 100
+    ranked = growth[growth["total_revenue"] >= min_revenue].sort_values("growth")
+    rates = ranked["growth"] * 100
     colors = [plotting.SERIES[0] if rate >= 0 else plotting.CRITICAL for rate in rates]
     fig = go.Figure(
         go.Scatter(
@@ -149,11 +148,11 @@ def plot_growth_ranking(growth, min_revenue=1e7):
             y=ranked.index,
             mode="markers+text",
             marker=dict(size=8, color=colors),
-            text=[f"{rate:+.1f}%" for rate in rates],
+            text=[f"{rate:+.0f}%" for rate in rates],
             textposition=["middle right" if rate >= 0 else "middle left" for rate in rates],
             textfont=dict(size=11, color=plotting.INK),
-            customdata=ranked["total_revenue"] / 1e6,
-            hovertemplate="%{y}<br>%{x:+.1f}%/yr · $%{customdata:.1f}M total<extra></extra>",
+            customdata=ranked["total_revenue"] / 1e3,
+            hovertemplate="%{y}<br>%{x:+.0f}% YoY · $%{customdata:.0f}K total<extra></extra>",
         )
     )
     for country, rate, color in zip(ranked.index, rates, colors):
@@ -163,11 +162,10 @@ def plot_growth_ranking(growth, min_revenue=1e7):
         )
     fig.add_vline(x=0, line_color=plotting.BASELINE, line_width=1, layer="below")
     fig.update_layout(
-        title="Spain and France lead on growth",
+        title="France, Canada and Denmark sat out the boom",
         xaxis=dict(
-            title="Annualized revenue change", ticksuffix="%",
-            range=[min(0, rates.min()) - 1.7, max(0, rates.max()) + 1.7],
-            dtick=2,
+            title="Year-over-year revenue change", ticksuffix="%",
+            range=[min(0, rates.min()) - 24, max(0, rates.max()) + 24],
         ),
         yaxis=dict(showgrid=False, categoryorder="array", categoryarray=ranked.index),
     )
@@ -189,9 +187,9 @@ def main():
     growth = growth_table(df)
 
     pd.set_option("display.float_format", lambda v: f"{v:,.3f}")
-    print(f"Markets with >= $10M total revenue ({FIRST_FULL_YEAR}-{LAST_FULL_YEAR}):")
-    big = growth[growth["total_revenue"] >= 1e7]
-    print(big.assign(cagr_pct=big["cagr"] * 100).round(1))
+    print("Markets with >= $30K total revenue, same-month YoY growth:")
+    big = growth[growth["total_revenue"] >= 3e4]
+    print(big.assign(growth_pct=big["growth"] * 100).round(1))
 
     plot_market_race(df)
     plot_growth_ranking(growth)

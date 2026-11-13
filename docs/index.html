@@ -190,7 +190,7 @@
     <p class="eyebrow">Northwind · Management briefing</p>
     <h1>What the order book says</h1>
     <p class="dek">Where to focus sales, which product deserves a backup plan, and where to investigate late shipments.</p>
-    <p class="byline">Hang Zhao · July 2012–October 2023</p>
+    <p class="byline">Hang Zhao · July 1996–May 1998</p>
   </div>
 </header>
 
@@ -198,31 +198,33 @@
   <nav class="summary" aria-label="Jump to a finding">
     <a href="#markets">
       <span class="summary-label">01 · Markets</span>
-      <strong class="summary-value">−1.7%</strong>
-      <span class="summary-detail">Annualized US revenue change</span>
+      <strong class="summary-value">+7%</strong>
+      <span class="summary-detail">France's growth while the US grew +131%</span>
     </a>
     <a href="#products">
       <span class="summary-label">02 · Products</span>
-      <strong class="summary-value">11.9%</strong>
+      <strong class="summary-value">11.2%</strong>
       <span class="summary-detail">Revenue share of the top product</span>
     </a>
     <a href="#fulfillment">
       <span class="summary-label">03 · Fulfillment</span>
-      <strong class="summary-value">23.1%</strong>
-      <span class="summary-detail">Share of orders shipped late</span>
+      <strong class="summary-value">17.6%</strong>
+      <span class="summary-detail">Rush orders shipped late (vs 3.7% standard)</span>
     </a>
   </nav>
 
   <p class="lede">
     This analysis advises a manager of the trading company represented in the
-    Northwind database: 16,282 orders and 609,283 order lines from 93
-    customers in 21 countries, roughly $448M of lifetime revenue across 77
-    food-and-beverage products. Three questions connect the data to decisions
-    about <em>where to sell</em>, <em>what we depend on</em>, and <em>how we
-    deliver</em>. All numbers and charts are produced by the Python scripts in
-    the <a href="https://github.com/hangzhao1006/hangz-15561-hw3">GitHub
-    repository</a>; trend comparisons use complete calendar years (2013–2022)
-    only, because 2012 and 2023 are partial years in the data.
+    course-provided Northwind database: 830 orders and 2,155 order lines from
+    91 customers in 21 countries, roughly $1.27M of revenue across 77
+    food-and-beverage products between July 1996 and May 1998. Three questions
+    connect the data to decisions about <em>where to sell</em>, <em>what we
+    depend on</em>, and <em>how we deliver</em>. All numbers and charts are
+    produced by the Python scripts in the
+    <a href="https://github.com/hangzhao1006/hangz-15561-hw3">GitHub
+    repository</a>; growth comparisons use the two windows with identical
+    month coverage (Jul 1996–May 1997 vs Jul 1997–May 1998), because both
+    end years are partial in the data.
   </p>
 
   <section id="markets">
@@ -232,15 +234,15 @@
     <div class="figures">
       <figure>
         <iframe src="figures/q1_market_trends.html" height="382" loading="lazy"
-          title="US and French annual revenue. France led briefly in 2017, then finished 2022 at $5.42 million versus $4.99 million for the US."></iframe>
-        <figcaption><b>Figure 1.</b> France edged ahead in 2017 and finished 2022 about
-          $430,000 ahead. Hover over a year to compare both markets.</figcaption>
+          title="Quarterly revenue for the USA, Germany and France. The US and German lines climb steeply through 1997 and early 1998 while the French line stays flat."></iframe>
+        <figcaption><b>Figure 1.</b> Quarterly revenue in the three largest markets.
+          The US and Germany climb; France stays flat. Hover over a quarter to compare.</figcaption>
       </figure>
       <figure>
         <iframe src="figures/q1_growth_ranking.html" height="382" loading="lazy"
-          title="Annualized revenue change in 11 markets. France and Spain grew about 3% a year, while US revenue declined 1.7% a year."></iframe>
-        <figcaption><b>Figure 2.</b> The dots show annualized change across markets with
-          at least $10M in revenue during 2013–2022. Hover to see each market’s size.</figcaption>
+          title="Same-month year-over-year revenue change in 13 markets. Sweden grew 157% and the US 131%, while France grew 7%, Canada 9%, and Denmark shrank 9%."></iframe>
+        <figcaption><b>Figure 2.</b> Year-over-year change (Jul–May vs Jul–May) across
+          markets with at least $30K in revenue. Hover to see each market’s size.</figcaption>
       </figure>
     </div>
     <div class="section-intro">
@@ -254,28 +256,30 @@
       <div>
         <span class="k">Approach</span>
         <p>Sum order-line revenue (unit price × quantity × (1 − discount)) per
-          customer country per year. To rank markets without being whipsawed by
-          single-year noise, compare the average of the first two complete years
-          (2013–14) with the last two (2021–22) as a compound annual growth rate,
-          for the 11 markets with at least $10M in revenue during 2013–2022.</p>
+          customer country. Because the data covers July 1996–May 1998, the only
+          unbiased year-over-year comparison is between the two windows with
+          identical month coverage: Jul 1996–May 1997 vs Jul 1997–May 1998.
+          Rank the 13 markets with at least $30K of revenue by that growth, and
+          plot quarterly revenue for the three largest markets.</p>
       </div>
     </div>
     <div class="section-results">
       <div class="finding">
         <span class="k">Main finding</span>
-        <p>The largest market is the one losing ground: USA revenue declined about
-          −1.7% per year (from ~$6.2M in 2013 to ~$5.0M in 2022), and France —
-          growing at +3.0%/yr — finished 2022 ahead of the US. Spain (+3.0%/yr) and
-          Argentina (+1.9%/yr) are the fastest-growing mid-size markets, while
-          Canada (−3.0%/yr) and Italy (−2.1%/yr) are shrinking.</p>
+        <p>The company is booming — most markets grew 50–160% year over year —
+          but the boom is uneven. The US (+131%) and Germany (+76%) drive most
+          of the absolute growth. France sticks out: it has as many customers
+          as Germany (11), yet grew only +7%; Canada (+9%) also stalled and
+          Denmark (−9%) shrank while everyone else surged.</p>
       </div>
       <div class="implication">
         <span class="k">Business implication</span>
-        <p>Rebalance sales coverage toward France and Spain, where momentum is
-          positive, and treat the USA as a retention problem — diagnose whether
-          the decline is customer churn, order frequency, or basket size before
-          spending more on acquisition there. Canada and Italy are small
-          <em>and</em> shrinking: serve them efficiently rather than invest.</p>
+        <p>In a market growing this fast, flat is failing. France is the
+          priority diagnosis: a large installed customer base that is not
+          expanding orders while comparable markets double — find out whether
+          the cause is account coverage, pricing, or product mix, and apply
+          whatever the US and German teams are doing right. Denmark and Canada
+          deserve the same review before the boom passes them by.</p>
       </div>
     </div>
   </section>
@@ -287,15 +291,15 @@
     <div class="figures">
       <figure>
         <iframe src="figures/q2_cumulative_share.html" height="372" loading="lazy"
-          title="Treemap of lifetime revenue. Côte de Blaye accounts for 11.9%, ranks 2–5 for 16.3%, ranks 6–20 for 28.4%, and the remaining 57 products for 43.4%."></iframe>
+          title="Treemap of revenue. Côte de Blaye accounts for 11.2%, ranks 2–5 for 19.4%, ranks 6–20 for 30.8%, and the remaining 57 products for 38.6%."></iframe>
         <figcaption><b>Figure 3.</b> Each rectangle’s area shows its share of revenue.
           Select a rank group to see its products, then select “All products” to return.</figcaption>
       </figure>
       <figure>
         <iframe src="figures/q2_top_products.html" height="372" loading="lazy"
-          title="Côte de Blaye earned $53.3 million. The next two products together earned $44.0 million."></iframe>
-        <figcaption><b>Figure 4.</b> Côte de Blaye generated $53.3M. Thüringer Rostbratwurst
-          and Mishi Kobe Niku generated $44.0M combined.</figcaption>
+          title="Côte de Blaye earned $141K. The next two products together earned $152K."></iframe>
+        <figcaption><b>Figure 4.</b> Côte de Blaye generated $141K. Thüringer Rostbratwurst
+          and Raclette Courdavault generated $152K combined.</figcaption>
       </figure>
     </div>
     <div class="section-intro">
@@ -309,24 +313,24 @@
       <div>
         <span class="k">Approach</span>
         <p>Rank all 77 products by lifetime discounted revenue, compute each
-          product's share of the $448M total, and group products by revenue rank. Compare the
+          product's share of the $1.27M total, and group products by revenue rank. Compare the
           leading product’s revenue with the combined revenue of the next two.</p>
       </div>
     </div>
     <div class="section-results">
       <div class="finding">
         <span class="k">Main finding</span>
-        <p>A single premium wine, Côte de Blaye, generates $53.3M — 11.9% of all
-          revenue and 2.2× the #2 product. The top 5 products carry 28% and the
-          top 20 carry 57% of revenue; the bottom half of the catalog (38
-          products) contributes under 20%.</p>
+        <p>A single premium wine, Côte de Blaye, generates $141K — 11.2% of all
+          revenue and 1.8× the #2 product. The top 5 products carry 31% and the
+          top 20 carry 61% of revenue, leaving the remaining 57 products with
+          under 39% between them.</p>
       </div>
       <div class="implication">
         <span class="k">Business implication</span>
         <p>Côte de Blaye deserves key-account treatment on the supply side: a
           secondary supplier or inventory buffer, and margin monitoring, because
           a 10% stumble in this one SKU moves total revenue by more than a
-          percentage point. At the other end, the long tail of ~38 slow products
+          percentage point. At the other end, the long tail of slow products
           is a catalog-rationalization candidate — each adds inventory and
           ordering overhead while contributing almost nothing.</p>
       </div>
@@ -340,15 +344,15 @@
     <div class="figures">
       <figure>
         <iframe src="figures/q3_late_by_promise.html" height="350" loading="lazy"
-          title="Late shipment rates by promised deadline. 65.6% for up to 7 days, 15.0% for 8–28 days, and 0.0% for 29 days or more."></iframe>
-        <figcaption><b>Figure 5.</b> The late share fell from 65.6% to 15.0% to 0% across
-          the three deadline groups. Hover over a bar to see order counts.</figcaption>
+          title="Late shipment rates by promised deadline. 17.6% for 14-day rush orders, 3.7% for 28-day standard orders, and 0% for 42-day flexible orders."></iframe>
+        <figcaption><b>Figure 5.</b> The late share fell from 17.6% to 3.7% to 0% across
+          the three deadline tiers. Hover over a bar to see order counts.</figcaption>
       </figure>
       <figure>
         <iframe src="figures/q3_actual_days.html" height="350" loading="lazy"
-          title="Cumulative share shipped over the first 21 days for orders with deadlines of up to 7 days or at least 29 days. Both groups reached half shipped at about 6 days."></iframe>
+          title="Cumulative share shipped over the first 30 days for 14-day and 28-day deadline orders. Both groups reached half shipped at about 7 to 8 days; the lines nearly overlap."></iframe>
         <figcaption><b>Figure 6.</b> At each day, the lines show what share of orders in each
-          group had already shipped. About half had shipped by day six in both groups.</figcaption>
+          group had already shipped. Rush orders moved no faster than standard ones.</figcaption>
       </figure>
     </div>
     <div class="section-intro">
@@ -361,34 +365,41 @@
       </div>
       <div>
         <span class="k">Approach</span>
-        <p>For all 16,261 shipped orders, compute the promised lead time
+        <p>For all 809 shipped orders, compute the promised lead time
           (required date − order date) and the actual fulfillment time
-          (shipped date − order date). Compare the late-shipment rate across
-          promised lead times, and check whether urgent orders are actually
-          processed faster. The three shippers have similar late rates (22.9%–23.3%) and median times to ship (about 6 days).</p>
+          (shipped date − order date). Exactly three promised lead times exist
+          in the data — 14, 28 and 42 days — so compare the late-shipment rate
+          across the three tiers, and check whether rush orders are actually
+          processed faster. The three shippers have similar late rates
+          (3.6%–5.1%) and median times to ship (6–7 days), ruling carriers out.</p>
       </div>
     </div>
     <div class="section-results">
       <div class="finding">
         <span class="k">Main finding</span>
-        <p>Orders with a deadline of 7 days or less were late 65.6% of the time.
-          No orders with a deadline of at least 29 days shipped late in this sample.
-          Both groups had a median time to ship of about 6 days. The gap makes
-          short deadlines and order prioritization worth investigating first.</p>
+        <p>Overall only 4.6% of orders shipped late — but rush orders (14-day
+          deadline) were late 17.6% of the time, nearly five times the standard
+          tier's 3.7%, and no 42-day order was ever late. The reason is visible
+          in the fulfillment clock: rush orders shipped in a median of 8 days
+          versus 7 for standard ones. The warehouse does not move urgent orders
+          any faster.</p>
       </div>
       <div class="implication">
         <span class="k">Business implication</span>
-        <p>Review how short deadlines are set and test a priority lane for urgent
-          orders. Track both time to ship and missed deadlines so a change in
-          deadlines can be distinguished from faster fulfillment.</p>
+        <p>Build an expedite lane that actually prioritizes 14-day orders
+          through picking and dispatch — they are only 8% of volume, so the
+          cost is small — or stop promising 14 days until one exists. Track
+          time to ship and missed deadlines separately, so a change in
+          promises can be distinguished from faster fulfillment.</p>
       </div>
     </div>
   </section>
 
   <footer>
-    <p>Data: Northwind SQLite sample database (populated build from the
-      public <a href="https://github.com/jpwhite3/northwind-SQLite3">jpwhite3/northwind-SQLite3</a>
-      project). Reproduce every number and figure with the Python scripts in the
+    <p>Data: the course-provided Northwind workbook (15.561, included in the
+      repository at <code>data/course/northwind_course.xlsx</code>), converted
+      to SQLite by <code>analysis/build_db.py</code>. Reproduce every number
+      and figure with the Python scripts in the
       <a href="https://github.com/hangzhao1006/hangz-15561-hw3">GitHub repository</a>
       (<code>analysis/q1_market_trends.py</code>, <code>q2_product_concentration.py</code>,
       <code>q3_fulfillment.py</code>). Built with the help of Claude Code;

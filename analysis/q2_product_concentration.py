@@ -54,24 +54,24 @@ def plot_top_products(df):
     for bar, color, item in zip(bars, colors, top.itertuples()):
         fig.add_trace(
             go.Bar(
-                x=[item.revenue / 1e6], y=[bar], orientation="h", name=item.product,
+                x=[item.revenue / 1e3], y=[bar], orientation="h", name=item.product,
                 marker=dict(color=color, line=dict(color=plotting.SURFACE, width=1)),
-                hovertemplate=item.product + "<br>$%{x:.2f}M<extra></extra>",
+                hovertemplate=item.product + "<br>$%{x:.1f}K<extra></extra>",
             )
         )
-    revenue = top["revenue"] / 1e6
+    revenue = top["revenue"] / 1e3
     totals = [revenue.iloc[0], revenue.iloc[1:].sum()]
     for bar, total in zip(bars, totals):
         fig.add_annotation(
-            x=total, y=bar, text=f"<b>${total:.1f}M</b>",
+            x=total, y=bar, text=f"<b>${total:.0f}K</b>",
             xanchor="left", xshift=5, showarrow=False,
             font=dict(size=12, color=plotting.INK),
         )
     fig.update_layout(
-        title="One wine outsells the next two combined",
+        title="One wine rivals the next two products combined",
         showlegend=False, barmode="stack", bargap=0.47,
         margin=dict(t=15, b=49),
-        xaxis=dict(title="Lifetime discounted revenue", tickprefix="$", ticksuffix="M",
+        xaxis=dict(title="Lifetime discounted revenue", tickprefix="$", ticksuffix="K",
                    range=[0, max(totals) * 1.37], nticks=5),
         yaxis=dict(showgrid=False, categoryorder="array", categoryarray=bars[:2][::-1]),
     )
@@ -87,7 +87,7 @@ def plot_product_mix(df):
     Returns:
         None. Writes ``docs/figures/q2_cumulative_share.html``.
     """
-    revenue = df["revenue"] / 1e6
+    revenue = df["revenue"] / 1e3
     ids = ["all"]
     parents = [""]
     labels = ["All products"]
@@ -114,7 +114,7 @@ def plot_product_mix(df):
             ids.append(f"product-{rank}")
             parents.append(tier)
             labels.append(item.product)
-            values.append(item.revenue / 1e6)
+            values.append(item.revenue / 1e3)
             colors.append(color)
 
     display_labels = labels.copy()
@@ -129,7 +129,7 @@ def plot_product_mix(df):
             texttemplate="%{text}<br><b>%{percentRoot:.1%}</b>",
             textfont=dict(size=16, color=plotting.INK),
             pathbar=dict(visible=True, textfont=dict(size=11)),
-            hovertemplate="<b>%{label}</b><br>$%{value:.2f}M · %{percentRoot:.1%} of all revenue<extra></extra>",
+            hovertemplate="<b>%{label}</b><br>$%{value:.1f}K · %{percentRoot:.1%} of all revenue<extra></extra>",
         )
     )
     fig.update_layout(
@@ -154,9 +154,9 @@ def main():
     df = load_product_revenue()
 
     total = df["revenue"].sum()
-    print(f"Total product revenue: ${total / 1e6:,.1f}M across {len(df)} products")
+    print(f"Total product revenue: ${total / 1e3:,.1f}K across {len(df)} products")
     print(f"Top product: {df.iloc[0]['product']} "
-          f"(${df.iloc[0]['revenue'] / 1e6:,.1f}M, {df.iloc[0]['share'] * 100:.1f}%)")
+          f"(${df.iloc[0]['revenue'] / 1e3:,.1f}K, {df.iloc[0]['share'] * 100:.1f}%)")
     for k in (5, 10, 20):
         print(f"Top {k} products: {df['cum_share'].iloc[k - 1] * 100:.1f}% of revenue")
     print("\nTop 10 products:")

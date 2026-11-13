@@ -26,15 +26,20 @@ business implication.
    pip install -r requirements.txt
    ```
 
-3. Place the Northwind SQLite database at `data/northwind.db`
-   (see `data/README.md`).
+3. Build the SQLite database from the course-provided workbook, which
+   is included in the repository at `data/course/northwind_course.xlsx`
+   (see `data/README.md`):
+
+   ```bash
+   cd analysis
+   python build_db.py   # writes data/northwind.db
+   ```
 
 4. Run the analysis scripts from the `analysis/` directory; each one
    writes its figures to `docs/figures/` and prints summary statistics:
 
    ```bash
-   cd analysis
-   python q1_market_trends.py        # market growth/decline by country
+   python q1_market_trends.py        # market growth by country
    python q2_product_concentration.py # product revenue concentration
    python q3_fulfillment.py          # late-shipment analysis
    ```
@@ -46,12 +51,14 @@ business implication.
 
 | Path | Purpose |
 | --- | --- |
+| `analysis/build_db.py` | Converts the course workbook into `data/northwind.db` |
 | `analysis/db.py` | Read-only SQLite connection and query helpers |
 | `analysis/plotting.py` | Shared chart style (colors, fonts, save path) |
 | `analysis/q1_market_trends.py` | Q1: which markets grow or decline |
 | `analysis/q2_product_concentration.py` | Q2: product revenue concentration |
 | `analysis/q3_fulfillment.py` | Q3: promised deadlines and late shipments |
-| `data/` | Northwind SQLite database (not committed; see `data/README.md`) |
+| `data/course/` | Course-provided Northwind workbook (committed) |
+| `data/` | Built SQLite database (not committed; see `data/README.md`) |
 | `docs/` | The webpage and its figures (GitHub Pages site) |
 | `SKILL.md` | The python-docstrings skill used to document the code |
 | `.claude/skills/python-docstrings/` | The skill installed for Claude Code |

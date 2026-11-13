@@ -36,8 +36,14 @@ def load_shipments():
     return df
 
 
+TIER_LABELS = {14: "14 days (rush)", 28: "28 days (standard)", 42: "42 days (flexible)"}
+
+
 def plot_late_by_promise(df):
-    """Compare late-shipment rates across three promised deadline ranges.
+    """Compare late-shipment rates across the three promised deadlines.
+
+    The dataset contains exactly three promised lead times: 14, 28 and
+    42 days between the order date and the required date.
 
     Args:
         df (pandas.DataFrame): Output of `load_shipments`.
@@ -45,9 +51,10 @@ def plot_late_by_promise(df):
     Returns:
         None. Writes ``docs/figures/q3_late_by_promise.html``.
     """
-    deadline = pd.cut(
-        df["promised_days"], [float("-inf"), 7, 28, float("inf")],
-        labels=["≤7 days", "8–28 days", "29+ days"],
+    deadline = pd.Categorical(
+        df["promised_days"].map(TIER_LABELS),
+        categories=list(TIER_LABELS.values()),
+        ordered=True,
     )
     groups = df.groupby(deadline, observed=True)["late"].agg(["size", "sum", "mean"])
     rates = groups["mean"] * 100
@@ -74,7 +81,7 @@ def plot_late_by_promise(df):
             font=dict(size=12, color=plotting.INK),
         )
     fig.update_layout(
-        title="Tight deadlines had the highest late rate",
+        title="Rush deadlines are late five times as often",
         barmode="stack", showlegend=False, bargap=0.52,
         xaxis=dict(title="Share of shipped orders", range=[0, 100], dtick=25, ticksuffix="%"),
         yaxis=dict(title="Promised deadline", autorange="reversed", showgrid=False),
@@ -87,17 +94,17 @@ def plot_actual_days(fast, slow):
     """Compare the cumulative shares shipped by each elapsed day.
 
     Args:
-        fast (pandas.DataFrame): Orders promised within seven days.
-        slow (pandas.DataFrame): Orders promised in at least 29 days.
+        fast (pandas.DataFrame): Orders promised in 14 days (rush).
+        slow (pandas.DataFrame): Orders promised in 28 days (standard).
 
     Returns:
         None. Writes ``docs/figures/q3_actual_days.html``.
     """
-    days = np.arange(22)
+    days = np.arange(31)
     fig = go.Figure()
     for group, label, color, dash in (
-        (slow, "29+ day deadline", plotting.SERIES[0], "solid"),
-        (fast, "≤7-day deadline", plotting.CRITICAL, "dash"),
+        (slow, "28-day deadline", plotting.SERIES[0], "solid"),
+        (fast, "14-day deadline", plotting.CRITICAL, "dash"),
     ):
         actual = np.sort(group["actual_days"].to_numpy())
         shipped = np.searchsorted(actual, days, side="right") / len(actual) * 100
@@ -115,10 +122,13 @@ def plot_actual_days(fast, slow):
         ax=57, ay=37, arrowhead=0, arrowcolor=plotting.BASELINE,
         bgcolor=plotting.SURFACE, font=dict(size=11, color=plotting.INK),
     )
+    fig.add_vline(x=14, line_color=plotting.CRITICAL, line_dash="dot", line_width=1,
+                  layer="below", annotation_text="rush deadline",
+                  annotation_font=dict(size=11, color=plotting.CRITICAL))
     fig.update_layout(
-        title="Urgent orders shipped at a similar pace",
+        title="Rush orders shipped no faster than standard ones",
         hovermode="x unified", margin=dict(t=52),
-        xaxis=dict(title="Days after order was placed", range=[0, 21], dtick=7, showgrid=False),
+        xaxis=dict(title="Days after order was placed", range=[0, 30], dtick=7, showgrid=False),
         yaxis=dict(title="Orders already shipped", ticksuffix="%", range=[0, 104], dtick=25),
     )
     plotting.save(fig, "q3_actual_days.html", "06 · The fulfillment clock")
@@ -147,14 +157,16 @@ def main():
         .agg(orders=("late", "size"), late_pct=("late", "mean"), med_days=("actual_days", "median"))
         .assign(late_pct=lambda t: (t["late_pct"] * 100).round(1))
     )
-    fast = df[df["promised_days"] <= 7]
-    slow = df[df["promised_days"] >= 29]
-    print(f"\nOrders promised in <= 7 days: {len(fast):,}, late rate {fast['late'].mean() * 100:.1f}%")
-    print(f"Orders promised in >= 29 days: {len(slow):,}, late rate {slow['late'].mean() * 100:.1f}%")
-    print(
-        "Median actual days to ship, promised <= 7 vs >= 29: "
-        f"{fast['actual_days'].median():.0f} vs {slow['actual_days'].median():.0f}"
-    )
+    fast = df[df["promised_days"] == 14]
+    slow = df[df["promised_days"] == 28]
+    relaxed = df[df["promised_days"] == 42]
+    for label, group in (("14 (rush)", fast), ("28 (standard)", slow),
+                         ("42 (flexible)", relaxed)):
+        print(
+            f"Promised {label}: {len(group):,} orders, "
+            f"late rate {group['late'].mean() * 100:.1f}%, "
+            f"median days to ship {group['actual_days'].median():.0f}"
+        )
 
     plot_late_by_promise(df)
     plot_actual_days(fast, slow)
