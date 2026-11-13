@@ -90,10 +90,10 @@ def plot_market_race(df):
     quarterly = quarterly.loc[: "1998-03-31"]  # 1998 Q2 has only 5 weeks
     labels = [f"{ts.year} Q{ts.quarter}" for ts in quarterly.index]
     fig = go.Figure()
-    for country, color, dash, symbol in (
-        ("USA", plotting.SERIES[0], "solid", "circle"),
-        ("Germany", plotting.SERIES[1], "solid", "square"),
-        ("France", plotting.CRITICAL, "dash", "diamond"),
+    for country, color, dash, symbol, yshift in (
+        ("USA", plotting.SERIES[0], "solid", "circle", -16),
+        ("Germany", plotting.SERIES[1], "solid", "square", 10),
+        ("France", plotting.CRITICAL, "dash", "diamond", 0),
     ):
         fig.add_trace(
             go.Scatter(
@@ -113,6 +113,7 @@ def plot_market_race(df):
             showarrow=False,
             xanchor="left",
             xshift=6,
+            yshift=yshift,
             font=dict(color=color, size=12),
             bgcolor=plotting.SURFACE,
         )
