@@ -198,8 +198,8 @@
   <nav class="summary" aria-label="Jump to a finding">
     <a href="#markets">
       <span class="summary-label">01 · Markets</span>
-      <strong class="summary-value">+7%</strong>
-      <span class="summary-detail">France's growth while the US grew +131%</span>
+      <strong class="summary-value">+21%</strong>
+      <span class="summary-detail">France's growth while Germany grew +132%</span>
     </a>
     <a href="#products">
       <span class="summary-label">02 · Products</span>
@@ -222,9 +222,10 @@
     depend on</em>, and <em>how we deliver</em>. All numbers and charts are
     produced by the Python scripts in the
     <a href="https://github.com/hangzhao1006/hangz-15561-hw3">GitHub
-    repository</a>; growth comparisons use the two windows with identical
-    month coverage (Jul 1996–May 1997 vs Jul 1997–May 1998), because both
-    end years are partial in the data.
+    repository</a>; growth comparisons use the two windows in which every
+    month is completely covered by the data (Aug 1996–Apr 1997 vs
+    Aug 1997–Apr 1998), because the data starts on 4 July 1996 and ends
+    on 6 May 1998.
   </p>
 
   <section id="markets">
@@ -240,8 +241,8 @@
       </figure>
       <figure>
         <iframe src="figures/q1_growth_ranking.html" height="382" loading="lazy"
-          title="Same-month year-over-year revenue change in 13 markets. Sweden grew 157% and the US 131%, while France grew 7%, Canada 9%, and Denmark shrank 9%."></iframe>
-        <figcaption><b>Figure 2.</b> Year-over-year change (Jul–May vs Jul–May) across
+          title="Same-month year-over-year revenue change in 13 markets. Sweden grew 355% and Germany 132%, while France grew 21% and Canada and Denmark shrank about 15%."></iframe>
+        <figcaption><b>Figure 2.</b> Year-over-year change (Aug–Apr vs Aug–Apr) across
           markets with at least $30K in revenue. Hover to see each market’s size.</figcaption>
       </figure>
     </div>
@@ -256,30 +257,32 @@
       <div>
         <span class="k">Approach</span>
         <p>Sum order-line revenue (unit price × quantity × (1 − discount)) per
-          customer country. Because the data covers July 1996–May 1998, the only
-          unbiased year-over-year comparison is between the two windows with
-          identical month coverage: Jul 1996–May 1997 vs Jul 1997–May 1998.
-          Rank the 13 markets with at least $30K of revenue by that growth, and
-          plot quarterly revenue for the three largest markets.</p>
+          customer country. The data starts on 4 July 1996 and ends on 6 May
+          1998, so July and May are partial months; the unbiased year-over-year
+          comparison uses the months every year covers completely:
+          Aug 1996–Apr 1997 vs Aug 1997–Apr 1998. Rank the 13 markets with at
+          least $30K of revenue by that growth, and plot quarterly revenue for
+          the three largest markets.</p>
       </div>
     </div>
     <div class="section-results">
       <div class="finding">
         <span class="k">Main finding</span>
-        <p>The company is booming — most markets grew 50–160% year over year —
-          but the boom is uneven. The US (+131%) and Germany (+76%) drive most
+        <p>The company is booming — most markets grew 60–350% year over year —
+          but the boom is uneven. Germany (+132%) and the US (+98%) drive most
           of the absolute growth. France sticks out: it has as many customers
-          as Germany (11), yet grew only +7%; Canada (+9%) also stalled and
-          Denmark (−9%) shrank while everyone else surged.</p>
+          as Germany (11), yet grew only +21%; and two markets actually shrank
+          while everyone else surged — Canada (−15%) and Denmark (−16%).</p>
       </div>
       <div class="implication">
         <span class="k">Business implication</span>
-        <p>In a market growing this fast, flat is failing. France is the
-          priority diagnosis: a large installed customer base that is not
-          expanding orders while comparable markets double — find out whether
-          the cause is account coverage, pricing, or product mix, and apply
-          whatever the US and German teams are doing right. Denmark and Canada
-          deserve the same review before the boom passes them by.</p>
+        <p>In a market growing this fast, +21% is underperforming and −15% is
+          an alarm. France is the priority diagnosis: a large installed
+          customer base growing at a sixth of Germany's pace — find out
+          whether the cause is account coverage, pricing, or product mix, and
+          apply whatever the German and US teams are doing right. Canada and
+          Denmark are losing revenue outright during a boom and need the same
+          review first, before the decline compounds.</p>
       </div>
     </div>
   </section>

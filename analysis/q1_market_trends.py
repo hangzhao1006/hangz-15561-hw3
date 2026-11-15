@@ -6,10 +6,11 @@ import plotly.graph_objects as go
 import db
 import plotting
 
-# The data covers Jul 1996 - May 1998. The only pair of windows with
-# identical month coverage is Jul-May vs Jul-May one year later.
-YEAR1 = ("1996-07-01", "1997-06-01")  # Jul 1996 - May 1997
-YEAR2 = ("1997-07-01", "1998-06-01")  # Jul 1997 - May 1998
+# The data runs 1996-07-04 through 1998-05-06, so July 1996 and May
+# 1998 are partial months. Aug-Apr is the longest span of months with
+# complete coverage in both comparison years.
+YEAR1 = ("1996-08-01", "1997-05-01")  # Aug 1996 - Apr 1997
+YEAR2 = ("1997-08-01", "1998-05-01")  # Aug 1997 - Apr 1998
 
 SQL = """
 SELECT o.OrderDate AS order_date,
@@ -41,9 +42,9 @@ def load_market_revenue():
 def growth_table(df):
     """Compute same-month year-over-year growth per country.
 
-    Compares Jul 1996 - May 1997 against Jul 1997 - May 1998, the two
-    windows with identical calendar-month coverage, so partial years
-    cannot bias the comparison.
+    Compares Aug 1996 - Apr 1997 against Aug 1997 - Apr 1998, the two
+    windows in which every calendar month is completely covered by the
+    data, so partial months cannot bias the comparison.
 
     Args:
         df (pandas.DataFrame): Output of :func:`load_market_revenue`.
@@ -166,7 +167,7 @@ def plot_growth_ranking(growth, min_revenue=3e4):
         title="France, Canada and Denmark sat out the boom",
         xaxis=dict(
             title="Year-over-year revenue change", ticksuffix="%",
-            range=[min(0, rates.min()) - 24, max(0, rates.max()) + 24],
+            range=[min(0, rates.min()) - 40, max(0, rates.max()) + 46],
         ),
         yaxis=dict(showgrid=False, categoryorder="array", categoryarray=ranked.index),
     )
